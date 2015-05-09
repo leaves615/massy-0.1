@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Premain-Class: org.smarabbit.massy.instrumentation.InstrumentationAgent
+Agent-Class: org.smarabbit.massy.instrumentation.InstrumentationAgent
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Can-Set-Native-Method-Prefix: true
