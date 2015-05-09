@@ -69,4 +69,7 @@
 		</plugins>
 
 	</build>
+	<modules>
+		<module>massy-instrumentation</module>
+	</modules>
 </project>
