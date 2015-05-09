@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.smarabbit.massy</groupId>
 	<artifactId>massy</artifactId>
-	<version>0.0.7</version>
+	<version>0.1</version>
 	<packaging>pom</packaging>
 
 	<organization>
@@ -71,5 +71,6 @@
 	</build>
 	<modules>
 		<module>massy-instrumentation</module>
-	</modules>
+    <module>massy-core</module>
+  </modules>
 </project>
