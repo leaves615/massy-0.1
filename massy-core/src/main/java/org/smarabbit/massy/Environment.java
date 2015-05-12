@@ -17,10 +17,12 @@ public class Environment {
 	
 	private String version = "0.1";
 	private String libDir;
+	private String tmpDir;
 		
 	private Environment(){
 		this.javaHome = System.getProperty("java.home");
 		this.fileSeparator = System.getProperty("file.separator");
+		this.tmpDir = System.getProperty("java.io.tmpdir");
 	}
 	
 	public String getJavaHome(){
@@ -35,10 +37,14 @@ public class Environment {
 		return this.version;
 	}
 	
+	public String getTmpDir(){
+		return this.tmpDir;
+	}
+	
 	public String getLibDir() {
 		return libDir;
 	}
-
+	
 	public void setLibDir(String libDir) {
 		this.libDir = libDir;
 	}

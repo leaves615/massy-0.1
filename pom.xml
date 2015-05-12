@@ -72,5 +72,6 @@
 	<modules>
 		<module>massy-instrumentation</module>
     <module>massy-core</module>
+    <module>massy-test</module>
   </modules>
 </project>

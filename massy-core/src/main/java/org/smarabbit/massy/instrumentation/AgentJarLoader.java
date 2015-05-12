@@ -3,7 +3,12 @@
  */
 package org.smarabbit.massy.instrumentation;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Method;
@@ -22,7 +27,7 @@ import org.smarabbit.massy.util.LogUtils;
 abstract class AgentJarLoader {
 
 	private static final String VM_CLASSNAME = "com.sun.tools.attach.VirtualMachine";
-	private static final String FILENAME = "massy-instrumentation-";
+	private static final String FILENAME = "massy-instrumentation-"  + Environment.getDefault().getMassyVersion() + ".jar";;
 	
 	private static URLClassLoader LOADER = null;
 	private static Class<?> VMCLASS ;
@@ -32,8 +37,9 @@ abstract class AgentJarLoader {
 	/**
 	 * 附加 agent jar.
 	 * @param agentJarPath
+	 * @throws IOException 
 	 */
-	public static void attachAgentJar(){
+	public static void attachAgentJar() throws IOException{
 		load();
 		
 		if (VMCLASS == null){
@@ -71,25 +77,70 @@ abstract class AgentJarLoader {
 	/**
 	 * 获取agent jar路径
 	 * @return
+	 * @throws IOException 
 	 */
-	protected static String getAgentJarPath(){
+	protected static String getAgentJarPath() throws IOException{
+		String tmpDir = Environment.getDefault().getTmpDir();
+		if (!tmpDir.endsWith(Environment.getDefault().getFileSparator())){
+			tmpDir = tmpDir + Environment.getDefault().getFileSparator();
+		}
+		File target = new File(tmpDir + FILENAME);
+		if (target.exists()){
+			return target.getAbsolutePath();
+		}
+		
 		String result = Environment.getDefault().getLibDir();
 		if (result != null){
 			if (!result.endsWith(Environment.getDefault().getFileSparator())){
 				result = result + Environment.getDefault().getFileSparator();
 			}
-			result = result + FILENAME + "-" + Environment.getDefault().getMassyVersion() + ".jar";
+			result = result + FILENAME;
 		}else{
 			Class<?> clazz = InstrumentationAgent.class;
 			String path = clazz.getProtectionDomain().getCodeSource().getLocation().getFile();
 			try {
-				result = java.net.URLDecoder.decode(path, "UTF-8");
+				
+				path = java.net.URLDecoder.decode(path, "UTF-8");
+				if (path.endsWith(".jar")){
+					File source = new File(path);
+					//复制文件
+					copyFile(source, target);
+					target.deleteOnExit();
+					return target.getAbsolutePath();
+				}
 			} catch (java.io.UnsupportedEncodingException ex) {
 				
 			}
 		}
 		
 		return result;
+	}
+	
+	private static void copyFile(File sourceFile, File targetFile) throws IOException {
+		BufferedInputStream inBuff = null;
+		BufferedOutputStream outBuff = null;
+		try {
+			// 新建文件输入流并对它进行缓冲
+			inBuff = new BufferedInputStream(new FileInputStream(sourceFile));
+
+			// 新建文件输出流并对它进行缓冲
+			outBuff = new BufferedOutputStream(new FileOutputStream(targetFile));
+
+			// 缓冲数组
+			byte[] b = new byte[1024 * 5];
+			int len;
+			while ((len = inBuff.read(b)) != -1) {
+				outBuff.write(b, 0, len);
+			}
+			// 刷新此缓冲的输出流
+			outBuff.flush();
+		} finally {
+			// 关闭流
+			if (inBuff != null)
+				inBuff.close();
+			if (outBuff != null)
+				outBuff.close();
+		}
 	}
 	
 	/**

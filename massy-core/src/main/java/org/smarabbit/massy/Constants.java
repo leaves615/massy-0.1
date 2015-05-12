@@ -56,8 +56,4 @@ public interface Constants {
 	 */
 	static final String PREPEND_INITIALIZERS = "prepend.initializers";
 
-	/**
-	 * 应用程序属性
-	 */
-	static final String APPLICATION_PROPERTIES = "/META-INF/massy/config/application.properties";
 }
