@@ -1,1 +1,2 @@
 org.smarabbit.massy.service.support.DefaultAdaptFactoryRegistrationManagerFactory
+org.smarabbit.massy.service.support.ServiceListenerRegistrationManagerFactory

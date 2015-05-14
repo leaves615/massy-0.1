@@ -8,9 +8,12 @@ import org.smarabbit.massy.adapt.AdaptNotSupportException;
 import org.smarabbit.massy.launch.DefaultMassyLauncher;
 import org.smarabbit.massy.launch.MassyLaunchException;
 import org.smarabbit.massy.launch.MassyLauncher;
+import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.util.Asserts;
 import org.smarabbit.massy.util.ServiceLoaderUtils;
 
 /**
+ * Massy工具，提供服务查询、适配和属性获取的方法
  * @author huangkaihui
  *
  */
@@ -18,6 +21,7 @@ public abstract class MassyUtils {
 
 	private static MassyContext INSTANCE;
 	private static AdaptFactoryRepository adaptRepo;
+	private static ServiceRepository serviceRepo;
 	
 	/**
 	 * 获取{@link MassyContext}
@@ -39,6 +43,7 @@ public abstract class MassyUtils {
 			
 			if (INSTANCE != null){
 				adaptRepo = INSTANCE.getService(AdaptFactoryRepository.class);
+				serviceRepo = INSTANCE.getService(ServiceRepository.class);
 			}
 		}
 	}
@@ -58,6 +63,43 @@ public abstract class MassyUtils {
 		return adaptRepo.adapt(target, adaptType);
 	}
 	
+	/**
+	 * 获取服务
+	 * @param serviceType {@link Class},服务类型
+	 * @param alias 服务别名
+	 * @return 返回服务实例
+	 * @throws ServiceNotFoundException
+	 *  	服务不存在则抛出异常
+	 */
+	public static <S> S getService(Class<S> serviceType, String alias) throws
+		ServiceNotFoundException {
+		return getService(serviceType, alias, false);
+	}
+	
+	/**
+	 * 获取服务
+	 * @param serviceType 服务类型，非空
+	 * @param alias 别名
+	 * @return 返回服务实例
+	 * @throws ServiceNotFoundException
+	 *  	服务不存在则抛出异常
+	 */
+	public static <S> S getService(Class<S> serviceType, String alias, boolean allowNull) 
+			throws ServiceNotFoundException{
+		checkStart();
+		
+		Asserts.argumentNotNull(serviceType,"serviceType");
+		if (allowNull){
+			return alias == null ?
+					serviceRepo.findService(serviceType) :
+						serviceRepo.findService(serviceType, alias);
+		}else{
+			return alias == null ?
+					INSTANCE.getService(serviceType) :
+						INSTANCE.getService(serviceType, alias);
+		}
+	}
+		
 	/**
 	 * 适配且不允许返回null.
 	 * @param target

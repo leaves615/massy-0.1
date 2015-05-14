@@ -42,8 +42,8 @@ public class InstrumentationAgentInitializer implements MassyContextInitializer 
 					LogUtils.warn("attch Instrumentation failed.");
 				}
 			} else {
-				if (LogUtils.isDebugEnabled()) {
-					LogUtils.debug("attch Instrumentation success.");
+				if (LogUtils.isInfoEnabled()) {
+					LogUtils.info("attch Instrumentation success.");
 				}
 			}
 		} catch (Exception e) {

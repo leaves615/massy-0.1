@@ -8,6 +8,9 @@ import java.lang.instrument.Instrumentation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.util.List;
+
+import org.smarabbit.massy.util.ServiceLoaderUtils;
 
 /**
  * {@link Instrumentation}工厂，提供{@link Instrumentation}实例
@@ -48,6 +51,13 @@ public abstract class InstrumentationFactory {
 			AgentJarLoader.attachAgentJar();
 			//再次尝试
 			INSTANCE = tryGetInstrumentation();
+			
+			if (INSTANCE != null){
+				List<InstrumentationAware> services = ServiceLoaderUtils.loadServices(InstrumentationAware.class);
+				for (InstrumentationAware service: services){
+					service.setInstrumentation(INSTANCE);
+				}
+			}
 		}
 		
 		return INSTANCE;

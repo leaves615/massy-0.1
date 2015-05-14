@@ -18,14 +18,14 @@ public class MassyFrameworkInitializerTest {
 		MassyContext context = MassyUtils.getDefaultContext();
 		System.out.println(context.toString());
 		
-		try {
+		/*try {
 			if (System.in.read() != 0){
 				return;
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 }

@@ -8,7 +8,9 @@ import java.util.Map;
 import org.smarabbit.massy.Descriptor;
 import org.smarabbit.massy.service.RegistState;
 import org.smarabbit.massy.service.RegisterServiceException;
+import org.smarabbit.massy.service.ServiceEvent;
 import org.smarabbit.massy.service.ServiceFactory;
+import org.smarabbit.massy.service.ServiceListener;
 import org.smarabbit.massy.service.ServiceRegistration;
 import org.smarabbit.massy.service.ServiceRegistrationManager;
 import org.smarabbit.massy.service.ServiceRepository;
@@ -241,12 +243,12 @@ public class DefaultServiceRepository extends
 	 * @param state
 	 */
 	protected void notifyEvent(Object service, Descriptor serviceDescriptor, RegistState state){
-		/*ServiceListenerRegistrationManager manager =
+		ServiceListenerRegistrationManager manager =
 				(ServiceListenerRegistrationManager)this.managerMap.get(ServiceListener.class);
 		if (manager != null){
 			ServiceEvent event = new ServiceEvent(service, serviceDescriptor, state);
 			manager.notifyServiceEvent(event);
-		}*/
+		}
 	}
 
 	/**
