@@ -5,6 +5,8 @@ package org.smarabbit.massy.annotation.support;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import javassist.CtClass;
+
 import org.smarabbit.massy.annotation.ExportService;
 import org.smarabbit.massy.util.Asserts;
 
@@ -27,13 +29,14 @@ public class ExportServiceAnnotatedRepository {
 
 	/**
 	 * 添加类的{@link ExportService}
-	 * @param className 类名
+	 * @param CtClass 类
+	 * @param anno 注解
 	 * @param anno {@link ExportService}注解
 	 */
-	public void add(String className, ExportService anno){
-		Asserts.argumentNotNull(className, "typeName");
+	public void add(CtClass cc, ExportService anno){
+		Asserts.argumentNotNull(cc, "cc");
 		Asserts.argumentNotNull(anno, "anno");
-		this.annoMap.putIfAbsent(className, anno);
+		this.annoMap.putIfAbsent(cc.getName(), anno);
 	}
 	
 	/**

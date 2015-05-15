@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.smarabbit.massy.service.support;
+package org.smarabbit.massy.adapt.support;
 
 import org.smarabbit.massy.adapt.AdaptFactoryRepository;
 import org.smarabbit.massy.service.ServiceRegistrationManager;

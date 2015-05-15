@@ -18,17 +18,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LazyBind {
 	
-	/**
-	 * 类名，默认取注解字段的类型
-	 * @return
-	 * 			{@link Class}
-	 */
-	Class<?> value() default Void.class;
-	
-	/**
-	 * 字段名, 默认取字段名
-	 * @return
-	 * 		字符串
-	 */
-	String fieldName() default "";
 }

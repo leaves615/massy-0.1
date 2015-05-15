@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.smarabbit.massy.service.support;
+package org.smarabbit.massy.adapt.support;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.smarabbit.massy.adapt.AdaptFactoryRepository;
-import org.smarabbit.massy.adapt.support.DefaultAdaptFactoryRepository;
 import org.smarabbit.massy.service.ServiceRegistration;
+import org.smarabbit.massy.service.support.AbstractServiceRegistration;
+import org.smarabbit.massy.service.support.AbstractServiceRegistrationManager;
+import org.smarabbit.massy.service.support.ServiceReferenceCounterFactory;
 import org.smarabbit.massy.util.LogUtils;
 
 /**
