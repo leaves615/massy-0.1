@@ -9,7 +9,7 @@ import javassist.ClassPool;
  * @author huangkaihui
  *
  */
-public abstract class AbstractTypeGenerator implements TypeGenerator {
+public abstract class AbstractTypeGenerator<T> implements TypeGenerator<T> {
 
 	protected final static ClassPool pool = ClassPool.getDefault();
 	

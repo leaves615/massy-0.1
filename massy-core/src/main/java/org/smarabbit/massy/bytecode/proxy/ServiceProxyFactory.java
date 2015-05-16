@@ -16,7 +16,7 @@ public abstract class ServiceProxyFactory {
 	
 	private static final Logger logger = 
 			LoggerFactory.getLogger(ServiceProxyFactory.class);
-	private static final TypeGenerator generator =
+	private static final TypeGenerator<Class<?>> generator =
 			new DynamicProxyTypeGenerator();
 
 	public static <S> S createProxy(Class<S> serviceType, S instance) throws Exception{

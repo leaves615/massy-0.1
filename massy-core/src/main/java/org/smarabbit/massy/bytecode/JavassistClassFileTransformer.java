@@ -63,15 +63,13 @@ public class JavassistClassFileTransformer extends InstrumentationSupportObject 
 			
             // Only instrument unfrozen classes
             if(!cc.isFrozen() ){
-            	
-            	this.mngr.transform(cc);
-            	
-            	if (cc.isModified()){
-            		if (logger.isTraceEnabled()){
-            			logger.trace("transformer class: " + className + ".");
-            		}
-            		return cc.toBytecode();
-            	}
+            	            	
+            	this.mngr.transform(cc);            	
+        		if (logger.isTraceEnabled()){
+        			logger.trace("transformer class: " + className + ".");
+        		}
+        		return cc.toBytecode();
+
             }
 			
             return classfileBuffer;

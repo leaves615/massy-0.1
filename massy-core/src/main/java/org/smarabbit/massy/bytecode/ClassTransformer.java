@@ -27,6 +27,11 @@ public abstract class ClassTransformer implements TransformerHandler<CtClass> {
 		Asserts.argumentNotNull(target, "target");
 		this.doTransform(target);
 	}
+	
+	protected <A> A getAnnotation(Class<A> annoType, CtClass cc) throws ClassNotFoundException{
+		Object result = cc.getAnnotation(annoType);
+		return annoType.cast(result);
+	}
 
 	protected abstract void doTransform(CtClass target) throws IllegalClassFormatException;
 }

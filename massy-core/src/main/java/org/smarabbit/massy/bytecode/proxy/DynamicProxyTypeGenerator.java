@@ -24,7 +24,7 @@ import org.smarabbit.massy.util.Asserts;
  * @author huangkaihui
  *
  */
-public class DynamicProxyTypeGenerator extends AbstractTypeGenerator {
+public class DynamicProxyTypeGenerator extends AbstractTypeGenerator<Class<?>> {
 
 	private final static Logger logger = LoggerFactory.getLogger(DynamicProxyTypeGenerator.class);
 	
@@ -38,11 +38,10 @@ public class DynamicProxyTypeGenerator extends AbstractTypeGenerator {
 	/* (non-Javadoc)
 	 * @see org.smarabbit.massy.bytecode.proxy.TypeGenerator#generate(java.lang.Object)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T> Class<? extends T> generate(Class<T> source) throws Exception {
+	public Class<?> generate(Class<?> source) throws Exception {
 		Asserts.argumentNotNull(source, "source");
-		Class<? extends T> result =(Class<? extends T>) this.classMap.get(source);
+		Class<?> result =  this.classMap.get(source);
 		if (result == null){
 			ClassClassPath classPath = new ClassClassPath(source);
 			pool.insertClassPath(classPath);
@@ -53,8 +52,7 @@ public class DynamicProxyTypeGenerator extends AbstractTypeGenerator {
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected <T> Class<? extends T> doGenerate(Class<T> source) throws Exception{
+	protected Class<?> doGenerate(Class<?> source) throws Exception{
 		//定义delegate字段
 		CtClass delegateType = pool.get(source.getName());
 		//创建CtClass
