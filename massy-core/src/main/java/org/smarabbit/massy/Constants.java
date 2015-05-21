@@ -27,9 +27,24 @@ public interface Constants {
 	static final String SERVICE_ALIAS = "service.alias";
 	
 	/**
-	 * 服务配置文件
+	 * 服务定义
 	 */
-	static final String SERVICE_CONFIGFILE = "service.configFile";
+	static final String SERVICE_DEFINITION = "service.definition";
+	
+	/**
+	 * 管理服务的容器，例如Spring
+	 */
+	static final String SERVICE_CONTAINER = "service.container";
+	
+	/**
+	 * 定义服务的配置文件
+	 */
+	static final String SERVICE_CONFIGFILE= "service.configFile";
+	
+	/**
+	 * 配置文件模式,定义按何种次序加载配置文件
+	 */
+	static final String CONFIGFILE_PATTERNS = "configFile.patterns";
 	
 	/**
 	 * 说明

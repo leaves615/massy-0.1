@@ -9,16 +9,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import javassist.ClassClassPath;
 import javassist.CtClass;
 import javassist.CtConstructor;
-import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewConstructor;
 import javassist.CtNewMethod;
-import javassist.Modifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smarabbit.massy.annotation.support.AbstractLazyBinder;
-import org.smarabbit.massy.annotation.support.LazyBinder;
+import org.smarabbit.massy.annotation.support.LazyBindHandlerDefinition;
+import org.smarabbit.massy.lazyload.AbstractLazyBinder;
+import org.smarabbit.massy.lazyload.LazyBinder;
 import org.smarabbit.massy.util.Asserts;
 
 /**
@@ -26,12 +25,12 @@ import org.smarabbit.massy.util.Asserts;
  * @author huangkaihui
  *
  */
-public class LazyBinderTypeGenerator extends AbstractTypeGenerator<CtMethod> {
+public class LazyBinderTypeGenerator extends AbstractTypeGenerator<LazyBindHandlerDefinition> {
 
 	private static final Logger logger = 
 			LoggerFactory.getLogger(LazyBinderTypeGenerator.class);
-	private Map<CtMethod, Class<? extends LazyBinder<?>>> classMap =
-			new ConcurrentHashMap<CtMethod, Class<? extends LazyBinder<?>>>();
+	private Map<LazyBindHandlerDefinition, Class<? extends LazyBinder<?>>> classMap =
+			new ConcurrentHashMap<LazyBindHandlerDefinition, Class<? extends LazyBinder<?>>>();
 	
 	/**
 	 * 
@@ -41,23 +40,25 @@ public class LazyBinderTypeGenerator extends AbstractTypeGenerator<CtMethod> {
 		pool.insertClassPath(classPath);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.smarabbit.massy.bytecode.proxy.TypeGenerator#generate(java.lang.Class)
-	 */
+
 	@Override
-	public Class<?> generate(CtMethod method)  throws Exception{
-		Asserts.argumentNotNull(method, "method");
-		Class<? extends LazyBinder<?>> result = classMap.get(method);
+	public Class<?> generate(LazyBindHandlerDefinition definition)  throws Exception{
+		Asserts.argumentNotNull(definition, "definition");
+		Class<? extends LazyBinder<?>> result = classMap.get(definition);
 		if (result == null){
-			String methodName = method.getName();
-			String paramTypeName = method.getParameterTypes()[0].getName();
-			String handlerClassName = method.getDeclaringClass().getName();
+			String methodName = definition.getMethodName();
+			String paramTypeName = definition.getParamTypeName();
+			String handlerClassName = definition.getDeclaringTypeName();
 			
-			String packageName = method.getDeclaringClass().getPackageName();
-			String className = method.getDeclaringClass().getSimpleName() + "$" +  method.getName() + "$" +
-					method.getParameterTypes()[0].getSimpleName() ;
+			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			Class<?> handlerClass = loader.loadClass(handlerClassName);
+			Class<?> paramType = loader.loadClass(paramTypeName);
+			
+			String packageName = handlerClass.getPackage().getName();
+			String className = handlerClass.getSimpleName() + "$" +  definition.getMethodName() + "$" +
+					paramType.getSimpleName() ;
 			result = this.genericNewClass(packageName, className, methodName, handlerClassName, paramTypeName);
-			this.classMap.put(method, result);
+			this.classMap.put(definition, result);
 		
 		}
 		return result;
@@ -71,17 +72,13 @@ public class LazyBinderTypeGenerator extends AbstractTypeGenerator<CtMethod> {
 		
 			CtClass superCc = pool.get(AbstractLazyBinder.class.getName());
 			cc.setSuperclass(superCc);
-			
-			CtClass stringType = pool.get(String.class.getName());
-			CtField f = new CtField(stringType, "methodName", cc);
-			f.setModifiers(Modifier.PROTECTED);
-			cc.addField(f);
-			
+						
+			cc.getClassPool().importPackage(LazyBindHandlerDefinition.class.getPackage().getName());
 			//构造方法
 			StringBuffer buffer = new StringBuffer();
-			buffer.append("public ").append(className).append("(Object handler, String methodName){\r\n")
-				.append("\tsuper(handler);\r\n")
-				.append("\tthis.methodName = methodName; \r\n")
+			buffer.append("public ").append(className).append("(Object handler, LazyBindHandlerDefinition definition){\r\n")
+				.append("\tsuper(handler, definition);\r\n")
+
 				.append("}");
 			if (logger.isTraceEnabled()){
 				logger.trace("add LazyBinder class constractor:\r\n" + buffer.toString());

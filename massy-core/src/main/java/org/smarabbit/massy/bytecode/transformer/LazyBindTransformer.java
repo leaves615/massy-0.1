@@ -13,24 +13,24 @@ import javassist.expr.FieldAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smarabbit.massy.annotation.LazyBind;
-import org.smarabbit.massy.annotation.support.LazyBinderRepositoryFactory;
 import org.smarabbit.massy.bytecode.FieldTransformer;
+import org.smarabbit.massy.lazyload.LazyLoadUtils;
 
 /**
  * {@link LazyBind}注解处理器，创建并注册{@link LazyBindMatchEntry}
  * @author huangkaihui
  *
  */
-public class LazyBindFieldTransformer extends FieldTransformer {
+public class LazyBindTransformer extends FieldTransformer {
 
 	private static final Logger logger =
-			LoggerFactory.getLogger(LazyBindFieldTransformer.class);
+			LoggerFactory.getLogger(LazyBindTransformer.class);
 	
 	private FieldEditor editor = new FieldEditor();
 	/**
 	 * 
 	 */
-	public LazyBindFieldTransformer() {
+	public LazyBindTransformer() {
 	}
 
 	/* (non-Javadoc)
@@ -76,8 +76,8 @@ public class LazyBindFieldTransformer extends FieldTransformer {
 				buff.append("{\n")
 					.append("\t").append("if (").append(fieldName).append(" == null){").append("\n")
 					.append("\t\t").append(fieldName)
-						.append("= ($r)").append(LazyBinderRepositoryFactory.class.getName()).append(".getDefault()")
-						.append(".lazyLoad(").append(className).append(",").append("\"").append(fName).append("\"").append(",").append("this").append(");\n");
+						.append("= ($r)").append(LazyLoadUtils.class.getName())
+						.append(".loadFieldValue(").append(className).append(",").append("\"").append(fName).append("\"").append(",").append("this").append(");\n");
 					
 				buff.append("\t}\n");		
 				
@@ -93,14 +93,6 @@ public class LazyBindFieldTransformer extends FieldTransformer {
 			}catch(Exception e){
 				throw new CannotCompileException(e.getMessage(),e);
 			}
-		}
-
-		/**
-		 * @return the field
-		 */
-		@SuppressWarnings("unused")
-		public CtField getField() {
-			return field;
 		}
 
 		/**

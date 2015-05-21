@@ -5,9 +5,9 @@ package org.smarabbit.massy.bytecode.proxy;
 
 import java.lang.reflect.Constructor;
 
-import javassist.CtMethod;
-
-import org.smarabbit.massy.annotation.support.LazyBinder;
+import org.smarabbit.massy.annotation.LazyBindHandler;
+import org.smarabbit.massy.annotation.support.LazyBindHandlerDefinition;
+import org.smarabbit.massy.lazyload.LazyBinder;
 import org.smarabbit.massy.util.Asserts;
 
 /**
@@ -23,17 +23,18 @@ public abstract class LazyBinderFactory {
 	/**
 	 * 创建{@link LazyBinder}实例
 	 * @param handler 标记有{@link LazyBindHandler}的实例
-	 * @param method {@link CtMethod}方法
+	 * @param definition {@link LazyBindHandlerDefinition}
 	 * @return
 	 * 			{@link LazyBinder}，不能返回null.
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public static LazyBinder<Object> create(Object handler, CtMethod method) throws Exception{
-		Asserts.argumentNotNull(method, "method");
-		Class<?> clazz = GENERATOR.generate(method);
+	public static LazyBinder<Object> create(Object handler, LazyBindHandlerDefinition definition) throws Exception{
+		Asserts.argumentNotNull(handler, "handler");
+		Asserts.argumentNotNull(definition, "definition");
+		Class<?> clazz = GENERATOR.generate(definition);
 		
-		Constructor<?> cstor = clazz.getConstructor(new Class<?>[]{Object.class, String.class});
-		return LazyBinder.class.cast(cstor.newInstance(handler, method.getName()));
+		Constructor<?> cstor = clazz.getConstructor(new Class<?>[]{Object.class, LazyBindHandlerDefinition.class});
+		return LazyBinder.class.cast(cstor.newInstance(handler, definition));
 	}
 }

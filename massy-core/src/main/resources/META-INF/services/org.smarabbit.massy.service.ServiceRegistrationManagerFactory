@@ -1,2 +1,3 @@
 org.smarabbit.massy.adapt.support.DefaultAdaptFactoryRegistrationManagerFactory
-org.smarabbit.massy.adapt.support.ServiceListenerRegistrationManagerFactory
+org.smarabbit.massy.service.support.ServiceListenerRegistrationManagerFactory
+org.smarabbit.massy.lazyload.LazyBinderRegistrationManagerFactory

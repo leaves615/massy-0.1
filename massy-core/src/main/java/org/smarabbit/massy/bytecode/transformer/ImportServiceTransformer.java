@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smarabbit.massy.MassyUtils;
 import org.smarabbit.massy.annotation.ImportService;
+import org.smarabbit.massy.annotation.support.AnnotatedDefinitionManagerFactory;
+import org.smarabbit.massy.annotation.support.ImportServiceDefinition;
 import org.smarabbit.massy.bytecode.FieldTransformer;
 
 /**
@@ -44,6 +46,16 @@ public class ImportServiceTransformer extends FieldTransformer {
 		try {
 			ImportService anno = this.getAnnotation(ImportService.class, target);
 			if (anno != null){
+				String className = target.getDeclaringClass().getName();
+				ImportServiceDefinition definition =
+						new ImportServiceDefinition(
+								className,
+								target.getName(), 
+								anno.serviceType(), 
+								anno.alias(), 
+								anno.allowNull());
+				AnnotatedDefinitionManagerFactory.getDefault().addDefinition(className, definition);
+				
 				this.editor.setAnno(anno);
 				this.editor.setField(target);
 				target.getDeclaringClass().instrument(this.editor);

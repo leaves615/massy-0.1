@@ -1,7 +1,9 @@
 /**
  * 
  */
-package org.smarabbit.massy.annotation.support;
+package org.smarabbit.massy.lazyload;
+
+import org.smarabbit.massy.annotation.support.LazyBindDefinition;
 
 /**
  * @author huangkaihui
@@ -9,6 +11,12 @@ package org.smarabbit.massy.annotation.support;
  */
 public interface LazyBinder<T> {
 
+	/**
+	 * {@link LazyBindDefinition}
+	 * @return
+	 */
+	LazyBindDefinition getDefinition();
+	
 	/**
 	 * 获取字段值
 	 * @param declaringObject {@link T},声明延迟加载字段的实例，非空

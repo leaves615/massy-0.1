@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.smarabbit.massy.annotation.support;
+package org.smarabbit.massy.lazyload;
 
 import org.smarabbit.massy.MassyException;
 

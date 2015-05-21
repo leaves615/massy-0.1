@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * 标记为输出服务
  * 
  * <br>
- * 标记的实例被创建时，将被注册到Massy Framework中。
+ * 此注解仅在容器中有效，容器有责任将注解实例注册到Massy Framework中.
  * 
  * @author huangkaihui
  *
