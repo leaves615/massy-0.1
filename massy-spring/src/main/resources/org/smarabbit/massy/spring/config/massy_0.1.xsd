@@ -1,0 +1,980 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.smarabbit.org/schema/massy"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:tool="http://www.springframework.org/schema/tool"
+	targetNamespace="http://www.smarabbit.org/schema/massy" 
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	elementFormDefault="qualified">
+
+	<xsd:import namespace="http://www.springframework.org/schema/beans"
+		schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
+	<xsd:import namespace="http://www.springframework.org/schema/tool"
+		schemaLocation="http://www.springframework.org/schema/tool/spring-tool.xsd" />
+
+	<!-- ================================== -->
+	<!-- ==== annotation driven ============== -->
+	<!-- ================================== -->
+	<xsd:element name="annotation-driven">
+		<xsd:annotation>
+			<xsd:documentation>
+			这个元素激活注解驱动。
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports
+                            type="org.smarabbit.massy.spring.config.AnnotationExportServiceBeanProcessor"/>
+                    <tool:exports
+                            type="org.smarabbit.massy.spring.config.AnnotationAdaptFactoryBeanProcessor"/>
+                    <tool:exports
+                    		type="org.smarabbit.massy.spring.config.AnnotationLazyBindHandlerDefinitionParser"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	
+	
+	
+	<!-- ================================== -->
+	<!-- ========= service type ============== -->
+	<!-- ================================== -->
+	<xsd:complexType name="serviceType">
+		<xsd:attribute name="class" type="xsd:string" use="required">
+			<xsd:annotation>
+   				<xsd:documentation>类型</xsd:documentation>
+   			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+		
+	<!-- ================================== -->
+	<!-- ======= exprotservice type ========== -->
+	<!-- ================================== -->
+	<xsd:complexType name="exportserviceType">        
+        <xsd:complexContent>        
+            <xsd:extension base="beans:identifiedType">   
+            	<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+            		<xsd:element name="service-property">
+            			<xsd:complexType>
+            				<xsd:attribute name="name" type="xsd:string" use="required">
+            					<xsd:annotation>
+            						<xsd:documentation>属性名</xsd:documentation>
+            					</xsd:annotation>
+            				</xsd:attribute>
+            				
+            				<xsd:attribute name="value" type="xsd:string" use="required">
+            					<xsd:annotation>
+            						<xsd:documentation>属性值</xsd:documentation>
+            					</xsd:annotation>
+            				</xsd:attribute>
+            			</xsd:complexType>
+            		</xsd:element>
+            	</xsd:sequence>
+            	                   
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+	
+	<!-- ================================== -->
+	<!-- ======= exprot service ============== -->
+	<!-- ================================== -->
+	<xsd:element name="export-service">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="java.lang.Object"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+	            		<xsd:element name="service-type" type="serviceType" maxOccurs="unbounded">  
+	            			<xsd:annotation>
+	   							<xsd:documentation>服务注册类型</xsd:documentation>
+	   						</xsd:annotation>          			
+	            		</xsd:element>
+	            	</xsd:sequence>
+	            	
+	            	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="java.lang.Object"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ======= exprot datasource=========== -->
+	<!-- ================================== -->
+	<xsd:element name="export-datasource">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的DataSource服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="javax.sql.DataSource"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="javax.sql.DataSource"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ======= exprot sqlsession  =========== -->
+	<!-- ================================== -->
+	<xsd:element name="export-sqlsession">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的SqlSession服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.apache.ibatis.session.SqlSession"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="org.apache.ibatis.session.SqlSession"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ==== exprot sqlsessionfactory  ======== -->
+	<!-- ================================== -->
+	<xsd:element name="export-sqlsessionfactory">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的SqlSessionFactory服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.apache.ibatis.session.SqlSessionFactory"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="org.apache.ibatis.session.SqlSessionFactory"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ======= exprot entitymanager======== -->
+	<!-- ================================== -->
+	<xsd:element name="export-entitymanager">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的EntityManager服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="javax.persistence.EntityManager"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="javax.persistence.EntityManager"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ==== exprot entitymanagerfactory======== -->
+	<!-- ================================== -->
+	<xsd:element name="export-entitymanagerfactory">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的EntityManagerFactory服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="javax.persistence.EntityManagerFactory"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="javax.persistence.EntityManagerFactory"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ===exprot transaction manager   ====== -->
+	<!-- ================================== -->
+	<xsd:element name="export-transactionmanager">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的TransactionManager服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.springframework.transaction.PlatformTransactionManager"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="org.springframework.transaction.PlatformTransactionManager"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+		
+	<!-- ================================== -->
+	<!-- ======= exprot cache manager ======= -->
+	<!-- ================================== -->
+	<xsd:element name="export-cachemanager">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的CacheManager服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.springframework.cache.CacheManager"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="org.springframework.cache.CacheManager"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ======= exprot eventbus   =========== -->
+	<!-- ================================== -->
+	<xsd:element name="export-eventbus">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的axon EventBus服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.axonframework.eventhandling.EventBus"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="org.axonframework.eventhandling.EventBus"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ======= exprot eventstore=========== -->
+	<!-- ================================== -->
+	<xsd:element name="export-eventstore">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的axon EventStore服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.axonframework.eventstore.EventStore"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="org.axonframework.eventstore.EventStore"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ======= exprot commandbus ======== -->
+	<!-- ================================== -->
+	<xsd:element name="export-commandbus">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的axon CommandBus服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.axonframework.commandhandling.CommandBus"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="org.axonframework.commandhandling.CommandBus"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- == exprot disruptorcommandbus ====== -->
+	<!-- ================================== -->
+	<xsd:element name="export-disruptorcommandbus">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的axon DisruptorCommandBus服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.axonframework.commandhandling.disruptor.DisruptorCommandBus"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="org.axonframework.commandhandling.disruptor.DisruptorCommandBus"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ===== exprot command gateway ====== -->
+	<!-- ================================== -->
+	<xsd:element name="export-commandgateway">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的axon CommandGateway服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.axonframework.commandhandling.gateway.CommandGateway"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="org.axonframework.commandhandling.gateway.CommandGateway"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ======= exprot saga repository======= -->
+	<!-- ================================== -->
+	<xsd:element name="export-sagarepository">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的axon SagaRepository服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.axonframework.saga.SagaRepository"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="org.axonframework.saga.SagaRepository"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ===== exprot cached repository   ====== -->
+	<!-- ================================== -->
+	<xsd:element name="export-cachedrepository">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，定义输出到MassyContext的CacheRepository服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.smarabbit.massy.model.repository.CachedRepository"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="exportserviceType">
+                	<xsd:attribute name="ref" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+									A short-cut alternative to a nested "<ref bean='...'/>".
+							]]></xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="org.smarabbit.massy.model.repository.CachedRepository"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ======= import service type ========== -->
+	<!-- ================================== -->
+	<xsd:complexType name="importserviceType">        
+        <xsd:complexContent>        
+            <xsd:extension base="beans:identifiedType">                      
+                <xsd:attribute name="alias"  type="xsd:string" use="optional" >
+                	<xsd:annotation>
+                		<xsd:documentation>引入服务的别名，存在多个同类型服务时，使用别名进行区分。</xsd:documentation>
+                	</xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+	
+	<!-- ================================== -->
+	<!-- ==========  import service   ========== -->
+	<!-- ================================== -->
+	<xsd:element name="import-service">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="java.lang.Object"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                		            	
+	            	<xsd:attribute name="serviceType" type="xsd:string" use="required" >
+						<xsd:annotation>
+							<xsd:documentation>引入服务类型.</xsd:documentation>
+							<xsd:appinfo>
+	                                <tool:annotation kind="ref">
+	                                    <tool:expected-type type="java.lang.Object"/>
+	                                </tool:annotation>
+	                            </xsd:appinfo>
+						</xsd:annotation>
+					</xsd:attribute>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- =======  import datasource   ========= -->
+	<!-- ================================== -->
+	<xsd:element name="import-datasource">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext的DataSource服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="javax.sql.DataSource"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- =======  import sqlsession   ========= -->
+	<!-- ================================== -->
+	<xsd:element name="import-sqlsession">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext的SqlSession服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.apache.ibatis.session.SqlSession"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- =======  import sqlsessionfactory   ========= -->
+	<!-- ================================== -->
+	<xsd:element name="import-sqlsessionfactory">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext的SqlSessionFactory服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.apache.ibatis.session.SqlSessionFactory"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- =======  import entitymanager   ========= -->
+	<!-- ================================== -->
+	<xsd:element name="import-entitymanager">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext的EntityManager服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="javax.persistence.EntityManager"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ====  import entitymanager  factory === -->
+	<!-- ================================== -->
+	<xsd:element name="import-entitymanagerfactory">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext的EntityManagerFactory服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="javax.persistence.EntityManagerFactory"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ===  import transaction manager   ===== -->
+	<!-- ================================== -->
+	<xsd:element name="import-transactionmanager">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext的TransactionManager服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.springframework.transaction.PlatformTransactionManager"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ======  import cache manager   ======= -->
+	<!-- ================================== -->
+	<xsd:element name="import-cachemanager">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext的TransactionManager服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.springframework.cache.CacheManager"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- =========  import eventbus   ========= -->
+	<!-- ================================== -->
+	<xsd:element name="import-eventbus">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext的axon EventBus服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.axonframework.eventhandling.EventBus"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- =========  import eventstore========= -->
+	<!-- ================================== -->
+	<xsd:element name="import-eventstore">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext的axon EventStore服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.axonframework.eventstore.EventStore"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ======  import commandbus========= -->
+	<!-- ================================== -->
+	<xsd:element name="import-commandbus">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext的axon CommandBus服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.axonframework.commandhandling.CommandBus"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ==  import disruptor commandbus    === -->
+	<!-- ================================== -->
+	<xsd:element name="import-disruptorcommandbus">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext的axon DisruptorCommandBus服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.axonframework.commandhandling.disruptor.DisruptorCommandBus"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ======  import command gateway = === -->
+	<!-- ================================== -->
+	<xsd:element name="import-commandgateway">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext的axon CommandGateway服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.axonframework.commandhandling.gateway.CommandGateway"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- =========  import saga repository===== -->
+	<!-- ================================== -->
+	<xsd:element name="import-sagarepository">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext的axon EventStore服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.axonframework.saga.SagaRepository"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+	
+	<!-- ================================== -->
+	<!-- ======  import cached repository   = === -->
+	<!-- ================================== -->
+	<xsd:element name="import-cachedrepository">
+		<xsd:annotation>
+			<xsd:documentation>
+			Spring上下文扩展，引入MassyContext的CachedRepository服务
+			</xsd:documentation>
+			<xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="org.smarabbit.massy.model.repository.CachedRepository"/>
+                </tool:annotation>
+            </xsd:appinfo>
+		</xsd:annotation>
+		
+		<xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="importserviceType">
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+	</xsd:element>
+
+</xsd:schema>

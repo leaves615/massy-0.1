@@ -1,0 +1,2 @@
+org.smarabbit.massy.spring.config.ExportServiceRegistryHandler
+org.smarabbit.massy.spring.config.LazyBindHandlerRegistryHandler
