@@ -1,8 +1,6 @@
 package org.smarabbit.massy.test;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.smarabbit.massy.MassyContext;
@@ -16,7 +14,7 @@ public class MassyFrameworkInitializerTest {
 		assertTrue(launched);
 		
 		MassyContext context = MassyUtils.getDefaultContext();
-		System.out.println(context.toString());
+		
 		
 		/*try {
 			if (System.in.read() != 0){

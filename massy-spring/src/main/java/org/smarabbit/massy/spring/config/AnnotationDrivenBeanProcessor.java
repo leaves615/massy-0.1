@@ -7,6 +7,8 @@ import java.util.Iterator;
 
 import org.smarabbit.massy.Registration;
 import org.smarabbit.massy.annotation.support.Definition;
+import org.smarabbit.massy.spring.MassyApplicationContext;
+import org.smarabbit.massy.spring.MassyResource;
 import org.smarabbit.massy.util.Asserts;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -30,6 +32,7 @@ public class AnnotationDrivenBeanProcessor
 	private ConfigurableListableBeanFactory beanFactory;
 	private volatile boolean running = false;
     private int phase = 0;
+    private MassyResource resource;
     
     private BeanRegistrationManager registrationManager = 
     		new DefaultBeanRegistrationManager();
@@ -65,7 +68,7 @@ public class AnnotationDrivenBeanProcessor
 				while (it.hasNext()){
 					BeanRegistryHandler handler = it.next();
 					if (handler.support(definition.getClass())){
-						Registration registration = handler.register(beanName, this.beanFactory, definition);
+						Registration registration = handler.register(beanName, this.beanFactory, definition, this.resource);
 						if (registration != null){
 							this.registrationManager.addRegistration(beanName, registration);
 						}
@@ -96,6 +99,9 @@ public class AnnotationDrivenBeanProcessor
 		AbstractRefreshableApplicationContext appContext = 
 				(AbstractRefreshableApplicationContext)applicationContext;
 		this.beanFactory = appContext.getBeanFactory();
+		if (this.applicationContext instanceof MassyApplicationContext){
+			this.resource = ((MassyApplicationContext)this.applicationContext).getMassyResource();
+		}
 	}
 	
 	@Override

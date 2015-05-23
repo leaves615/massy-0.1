@@ -22,5 +22,5 @@ public interface BeanDefinitionManager {
 	 * 			{@link Definition}数组,无{@link Definition}返回empty.
 	 */
 	Definition[] getDefinitions(String beanName, Class<?> beanType);
-			
+
 }

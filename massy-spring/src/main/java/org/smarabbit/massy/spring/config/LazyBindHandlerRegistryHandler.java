@@ -10,6 +10,7 @@ import org.smarabbit.massy.annotation.support.LazyBindHandlerDefinition;
 import org.smarabbit.massy.bytecode.proxy.LazyBinderFactory;
 import org.smarabbit.massy.lazyload.LazyBinder;
 import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.spring.MassyResource;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
@@ -43,7 +44,7 @@ public class LazyBindHandlerRegistryHandler implements BeanRegistryHandler {
 	 */
 	@Override
 	public Registration register(String beanName,
-			ConfigurableListableBeanFactory factory, Definition definition) {
+			ConfigurableListableBeanFactory factory, Definition definition, MassyResource resource) {
 		LazyBindHandlerDefinition lbhd = (LazyBindHandlerDefinition)definition;
 		Object handler = factory.getBean(beanName);
 		LazyBinder<Object> binder;

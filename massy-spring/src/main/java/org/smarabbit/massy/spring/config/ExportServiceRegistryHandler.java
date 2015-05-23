@@ -3,12 +3,17 @@
  */
 package org.smarabbit.massy.spring.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.smarabbit.massy.Constants;
 import org.smarabbit.massy.MassyUtils;
 import org.smarabbit.massy.Registration;
 import org.smarabbit.massy.annotation.support.Definition;
 import org.smarabbit.massy.annotation.support.ExportServiceDefinition;
 import org.smarabbit.massy.service.ServiceFactory;
 import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.spring.MassyResource;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
@@ -21,14 +26,14 @@ public class ExportServiceRegistryHandler implements BeanRegistryHandler {
 
 	protected static final ServiceRepository SERVICEREPOSITORY =
 			MassyUtils.getDefaultContext().getService(ServiceRepository.class);
-	
+		
 	/**
 	 * 
 	 */
 	public ExportServiceRegistryHandler() {
 
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.smarabbit.massy.spring.config.BeanRegistryHandler#support(java.lang.Class)
 	 */
@@ -43,14 +48,28 @@ public class ExportServiceRegistryHandler implements BeanRegistryHandler {
 	 */
 	@Override
 	public Registration register(String beanName, ConfigurableListableBeanFactory factory,
-			Definition definition) {
+			Definition definition, MassyResource resource) {
 		ExportServiceDefinition esd = (ExportServiceDefinition)definition;
 		BeanDefinition beanDefinition = factory.getBeanDefinition(beanName);
+		
+		Map<String, Object> props = esd.getProperties();
+		if (resource != null){
+			//创建新的Map
+			props = props == null ?
+					new HashMap<String, Object>():
+						new HashMap<String, Object>(props);
+					
+			if (resource != null){
+				props.put(Constants.SERVICE_CONTAINER, "spring");
+				props.put(Constants.SERVICE_CONFIGFILE, resource.getName());
+			}
+		}
+		
 		ServiceFactory service = beanDefinition.isPrototype() ?
 				new PrototypeBeanServiceFactory(beanName, factory) :
 					new BeanServiceFactory(beanName, factory);
 										
-		return SERVICEREPOSITORY.register(esd.getServiceTypes(), service, esd.getProperties());
+		return SERVICEREPOSITORY.register(esd.getServiceTypes(), service, props);
 	}
 
 }

@@ -63,6 +63,4 @@ public class DefaultBeanDefinitionManager implements BeanDefinitionManager {
 			return AnnotatedDefinitionManagerFactory.getDefault().getDefinitions(beanType);
 		}
 	}
-	
-	
 }

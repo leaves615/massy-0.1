@@ -75,5 +75,8 @@
 		<module>massy-core</module>
 		<module>massy-test</module>
     <module>massy-spring</module>
+    <module>massy-web</module>
+    <module>massy-axon</module>
+    <module>massy-model</module>
   </modules>
 </project>

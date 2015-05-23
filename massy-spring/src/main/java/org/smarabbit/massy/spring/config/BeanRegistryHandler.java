@@ -5,6 +5,7 @@ package org.smarabbit.massy.spring.config;
 
 import org.smarabbit.massy.Registration;
 import org.smarabbit.massy.annotation.support.Definition;
+import org.smarabbit.massy.spring.MassyResource;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 /**
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  *
  */
 public interface BeanRegistryHandler {
-
+	
 	/**
 	 * 判断是否支持{@link Definition}类型的注册
 	 * @param definition {@link Definition}
@@ -28,7 +29,9 @@ public interface BeanRegistryHandler {
 	 * @param beanName bean名称
 	 * @param factory {@link ConfigurableListableBeanFactory}工厂
 	 * @param definition {@link Definition}
+	 * @param resource {@link MassyResource},可以为null.
 	 * @return
+	 * 		{@link Registration},可能返回null.
 	 */
-	Registration register(String beanName, ConfigurableListableBeanFactory factory,  Definition definition);
+	Registration register(String beanName, ConfigurableListableBeanFactory factory,  Definition definition, MassyResource resource);
 }
