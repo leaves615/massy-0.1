@@ -79,7 +79,7 @@ public class SpringContextInitializer implements MassyContextInitializer {
 			while (it.hasNext()){
 				Entry<String, Collection<MassyResource>> entry = it.next();
 				loader.setResources(entry.getValue());
-				loader.load();
+				loader.load();	
 				
 				if (loader.getException() != null){
 					throw loader.getException();

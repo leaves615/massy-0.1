@@ -61,6 +61,7 @@ public class ExportServiceBeanDefinitionParser extends
 			if (refDefinition == null){
 				throw new FatalBeanException("bean cannot found: beanName=" + beanName + ".");
 			}
+			refDefinition.setLazyInit(false);
 			
 			if (refDefinition.getBeanClassName() != null){
 				Class<?> beanType = LOADER.loadClass(refDefinition.getBeanClassName());

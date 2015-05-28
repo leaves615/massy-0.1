@@ -49,13 +49,19 @@ public class AnnotationDrivenBeanProcessor
 	@Override
 	public void postProcessBeanFactory(
 			ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
+		this.beanFactory = beanFactory;		
 	}
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName)
+			throws BeansException {		
+		return bean;
+	}
+
+	@Override
+	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
-			
+		
 		Class<?> beanType = bean.getClass();
 		DefaultBeanDefinitionManager definitionManager = 
 				DefaultBeanDefinitionManagerUtils.getBeanDefinitionManager(this.beanFactory);
@@ -76,12 +82,6 @@ public class AnnotationDrivenBeanProcessor
 				}
 			}
 		}
-		return bean;
-	}
-
-	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
-			throws BeansException {
 		return bean;
 	}
 	

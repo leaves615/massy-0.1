@@ -171,14 +171,9 @@ public class DefaultServiceRepository extends
 			for (Class<?> serviceType : serviceTypes){
 				this.validateServiceMatch(serviceType, service);
 				
-				
 				ServiceRegistrationManager<?> manager = this.getRegistrationManager(serviceType);
 				if (manager == null){
-					ServiceRegistrationManager<?> tmp = this.createRegistrationManager(serviceType);
-					manager = this.managerMap.putIfAbsent(serviceType, tmp);
-					if (manager == null){
-						manager = tmp;
-					}
+					manager =  this.createRegistrationManager(serviceType);
 				}
 				manager.add(result);
 			}

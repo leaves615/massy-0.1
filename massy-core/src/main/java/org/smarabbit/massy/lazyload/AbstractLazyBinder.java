@@ -13,6 +13,8 @@ import org.smarabbit.massy.util.Asserts;
  */
 public abstract class AbstractLazyBinder<T> implements LazyBinder<T> {
 
+	private static final ClassLoader LOADER = Thread.currentThread().getContextClassLoader();
+	
 	private final LazyBindDefinition definiton;
 	private final Object handler;
 	
@@ -42,7 +44,37 @@ public abstract class AbstractLazyBinder<T> implements LazyBinder<T> {
 	 */
 	@Override
 	public Object getValue(T declaringObject) {
-		return null;
+		Asserts.argumentNotNull(declaringObject, "declaringObject");
+		this.checkCaller(declaringObject);
+		return this.doGetValue(declaringObject);
+	}
+	
+	/**
+	 * 检查调用是否由declaringObject发出
+	 * @param declaringObject
+	 */
+	protected void checkCaller(T declaringObject){
+		Class<?> type = declaringObject.getClass();
+		StackTraceElement[] stacks = Thread.currentThread().getStackTrace();   
+		if (stacks.length <4){
+			throw new IllegalArgumentException("unauthorized access.");
+		}
+		
+		String className = stacks[3].getClassName();
+		if (type.getName().equals(className)){
+			return;
+		}
+		
+		//不等于，则判断继承关系
+		Class<?> callerType;
+		try {
+			callerType = LOADER.loadClass(className);
+			if (!callerType.isAssignableFrom(type)){
+				throw new IllegalArgumentException("unauthorized access.");
+			}
+		} catch (ClassNotFoundException e) {
+			throw new IllegalArgumentException("unauthorized access.");
+		}
 	}
 
 	/* (non-Javadoc)
@@ -52,4 +84,6 @@ public abstract class AbstractLazyBinder<T> implements LazyBinder<T> {
 	public LazyBindDefinition getDefinition() {
 		return this.definiton;
 	}
+	
+	protected abstract Object doGetValue(T declaringObject);
 }

@@ -75,5 +75,4 @@ public class LazyBinderRegistrationManager extends
 		return this.registrationMap.values();
 	}
 
-	
 }

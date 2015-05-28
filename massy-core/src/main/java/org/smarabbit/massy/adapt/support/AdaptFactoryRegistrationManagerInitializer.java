@@ -78,14 +78,24 @@ public class AdaptFactoryRegistrationManagerInitializer {
 	 */
 	@SuppressWarnings("unchecked")
 	protected <A> AdaptFactoryRegistrationManager<A> createRegistrationManager(Class<A> adaptType){
+		AdaptFactoryRegistrationManager<A> result = null;
+		AdaptFactoryRegistrationManager<A> tmp = null;
 		AdaptFactoryRegistrationManagerFactory<A> factory = 
 				(AdaptFactoryRegistrationManagerFactory<A>)this.factories.remove(adaptType);
 		if (factory != null){
-			return factory.create();
+			tmp = factory.create();
 		}else{
 			//创建缺省的服务注册管理器
-			return new DefaultAdaptFactoryRegistrationManager<A>();
+			tmp = new DefaultAdaptFactoryRegistrationManager<A>();
 		}
+		
+		tmp.bind(adaptType);
+		result = (AdaptFactoryRegistrationManager<A>) this.managerMap.putIfAbsent(adaptType, tmp);
+		if (result == null){
+			result = tmp;
+		}
+		
+		return result;
 	}
 
 }

@@ -5,7 +5,6 @@ package org.smarabbit.massy.adapt.support;
 
 import java.util.Map;
 
-import org.smarabbit.massy.Adaptable;
 import org.smarabbit.massy.Descriptor;
 import org.smarabbit.massy.adapt.AdaptFactory;
 import org.smarabbit.massy.adapt.AdaptFactoryRegistration;
@@ -39,17 +38,7 @@ public class DefaultAdaptFactoryRepository extends
 		Asserts.argumentNotNull(target, "target");
 		Asserts.argumentNotNull(adaptType, "adaptType");
 
-		A result = null;
-
-		// 通过对象自身的适配能力进行处理
-		if (Adaptable.class.isInstance(target)) {
-			result = ((Adaptable) target).adapt(adaptType);
-			if ((result != null) && (adaptType.isInstance(result))) {
-				return result;
-			}
-		}
-
-		// 通过扩展的适配进行处理
+		// 适配处理
 		AdaptFactoryRegistrationManager<A> manager = this
 				.getRegistrationManager(adaptType);
 		if (manager != null) {
@@ -68,18 +57,8 @@ public class DefaultAdaptFactoryRepository extends
 		Asserts.argumentNotNull(target, "target");
 		Asserts.argumentNotNull(adaptType, "adaptType");
 		Asserts.argumentNotNull(spec, "spec");
-
-		A result = null;
-
-		// 通过对象自身的适配能力进行处理
-		if (Adaptable.class.isInstance(target)) {
-			result = ((Adaptable) target).adapt(adaptType);
-			if (result != null) {
-				return result;
-			}
-		}
-
-		// 通过扩展的适配进行处理
+		
+		// 适配处理
 		AdaptFactoryRegistrationManager<A> manager = this
 				.getRegistrationManager(adaptType);
 		if (manager != null) {
@@ -118,6 +97,9 @@ public class DefaultAdaptFactoryRepository extends
 				props);
 
 		AdaptFactoryRegistrationManager<A> manager = this.getRegistrationManager(adaptType);
+		if (manager == null){
+			manager = this.createRegistrationManager(adaptType);
+		}
 		manager.add(result);
 		if (LogUtils.isInfoEnabled()) {
 			LogUtils.info("register AdaptFactory:[adaptType="
@@ -165,6 +147,5 @@ public class DefaultAdaptFactoryRepository extends
 		public void unregister() {
 			doUnregister(this);
 		}
-	
 	}
 }

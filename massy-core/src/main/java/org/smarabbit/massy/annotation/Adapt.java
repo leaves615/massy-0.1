@@ -24,5 +24,22 @@ public @interface Adapt {
 	 * @return
 	 * 		{@link Class}
 	 */
-	Class<?> value();
+	Class<?> adaptType();
+	
+	/**
+	 * 指定策略
+	 * <br>
+	 * 指定宿主的类型。
+	 * @return
+	 */
+	Class<?>[] specificStrategy() default {};
+	
+	/**
+	 * 扩展策略
+	 * <br>
+	 * 宿主所属扩展派生类型
+	 * @return
+	 */
+	Class<?>[] extendStrategy();
+	
 }

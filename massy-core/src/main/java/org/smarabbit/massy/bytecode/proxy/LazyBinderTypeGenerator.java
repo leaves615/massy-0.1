@@ -87,8 +87,8 @@ public class LazyBinderTypeGenerator extends AbstractTypeGenerator<LazyBindHandl
 			cc.addConstructor(m);
 			
 			buffer.setLength(0);
-			//getValue方法
-			buffer.append("public Object getValue(Object declaringObject) {\r\n")
+			//doGetValue方法
+			buffer.append("protected Object doGetValue(Object declaringObject) {\r\n")
 				.append("\treturn ")
 					.append("((").append(handlerTypeName).append(")")
 					.append("this.getHandler()).")

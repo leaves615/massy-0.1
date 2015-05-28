@@ -78,14 +78,24 @@ public abstract class ServiceRegistrationManagerInitializer {
 	 */
 	@SuppressWarnings("unchecked")
 	protected <S> ServiceRegistrationManager<S> createRegistrationManager(Class<S> serviceType){
+		ServiceRegistrationManager<S> result = null;
+		ServiceRegistrationManager<S> tmp = null;
 		ServiceRegistrationManagerFactory<S> factory = 
 				(ServiceRegistrationManagerFactory<S>)this.factories.remove(serviceType);
 		if (factory != null){
-			return factory.create();
+			tmp = factory.create();
 		}else{
 			//创建缺省的服务注册管理器
-			return new DefaultServiceRegistrationManager<S>();
+			tmp = new DefaultServiceRegistrationManager<S>();
 		}
+		tmp.bind(serviceType);
+		
+		result = (ServiceRegistrationManager<S>) this.managerMap.putIfAbsent(serviceType, tmp);
+		if (result == null){
+			result = tmp;
+		}
+		
+		return result;
 	}
 
 }

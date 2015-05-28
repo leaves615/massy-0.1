@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smarabbit.massy.annotation.LazyBind;
 import org.smarabbit.massy.bytecode.FieldTransformer;
+import org.smarabbit.massy.lazyload.LazyBinder;
 import org.smarabbit.massy.lazyload.LazyLoadUtils;
 
 /**
@@ -75,10 +76,13 @@ public class LazyBindTransformer extends FieldTransformer {
 				StringBuffer buff = new StringBuffer();
 				buff.append("{\n")
 					.append("\t").append("if (").append(fieldName).append(" == null){").append("\n")
-					.append("\t\t").append(fieldName)
-						.append("= ($r)").append(LazyLoadUtils.class.getName())
-						.append(".loadFieldValue(").append(className).append(",").append("\"").append(fName).append("\"").append(",").append("this").append(");\n");
 					
+					.append("\t\t").append(LazyBinder.class.getName()).append(" binder=").append(LazyLoadUtils.class.getName())
+						.append(".getLazyBinder(").append(className).append(",").append("\"").append(fName).append("\"").append(");\n")
+						
+					.append("\t\t").append(fieldName)
+						.append("= ($r)").append(" binder.getValue(").append("this").append(");").append("\n");
+											
 				buff.append("\t}\n");		
 				
 				buff.append("\t").append("$_= $proceed($$);\n");

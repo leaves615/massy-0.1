@@ -40,19 +40,7 @@ public abstract class AbstractAdaptFactoryRegistrationManager<A> extends
 	@Override
 	public A getAdaptor(Object target) {
 		Asserts.argumentNotNull(target, "target");
-		A result = null;
-		
-		//循环调用AdaptFactoryRegistration的adapt方式，直到返回值不为null.
-		Iterator<AdaptFactoryRegistration<A>> it = this.getRegistrations().iterator();
-		while (it.hasNext()){
-			AdaptFactoryRegistration<A> registration = it.next();
-			
-			result = this.getAdaptorFromRegistration(registration, target);
-			if (result != null){
-				return result;
-			}
-		}
-		return null;
+		return this.doGetAdaptor(target.getClass(), target);
 	}
 
 	/* (non-Javadoc)
@@ -86,4 +74,12 @@ public abstract class AbstractAdaptFactoryRegistrationManager<A> extends
 	protected Class<A> getAdaptType(){
 		return this.adaptType;
 	}
+	
+	/**
+	 * 获取适配对象
+	 * @param hostClass
+	 * @param target
+	 * @return
+	 */
+	protected abstract  A doGetAdaptor(Class<?> hostClass, Object target);
 }
