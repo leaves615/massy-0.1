@@ -37,4 +37,5 @@ public abstract class LazyBinderFactory {
 		Constructor<?> cstor = clazz.getConstructor(new Class<?>[]{Object.class, LazyBindHandlerDefinition.class});
 		return LazyBinder.class.cast(cstor.newInstance(handler, definition));
 	}
+	
 }

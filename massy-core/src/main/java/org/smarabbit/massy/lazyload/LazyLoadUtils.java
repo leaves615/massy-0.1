@@ -6,7 +6,7 @@ package org.smarabbit.massy.lazyload;
 import org.smarabbit.massy.MassyUtils;
 import org.smarabbit.massy.annotation.support.LazyBindDefinition;
 import org.smarabbit.massy.service.DefinitionEqualSpecification;
-import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.service.ServiceRegistry;
 
 /**
  * @author huangkaihui
@@ -28,10 +28,10 @@ public abstract class LazyLoadUtils {
 		}*/
 		
 		LazyBindDefinition definition = new LazyBindDefinition(declaringType.getName(), fieldName);
-		ServiceRepository repo = MassyUtils.getDefaultContext().getService(ServiceRepository.class);
+		ServiceRegistry registry = MassyUtils.getDefaultContext().getService(ServiceRegistry.class);
 		DefinitionEqualSpecification spec = new DefinitionEqualSpecification(definition);
 		
-		LazyBinder<Object> result = repo.findService(LazyBinder.class, spec);
+		LazyBinder<Object> result = registry.findService(LazyBinder.class, spec);
 		if (result == null){
 			throw new LazyLoadException("cannot found match LazyBinder: " + definition);
 		}

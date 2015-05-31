@@ -11,7 +11,7 @@ import org.smarabbit.massy.RegistrationManager;
  * 管理同适配类型的{@link AdaptFactoryRegistration}.
  * 
  * <br>
- * 注册{@link AdaptFactory}时，{@link AdaptFactoryRepository}会根据{@link AdaptFactory}
+ * 注册{@link AdaptFactory}时，{@link AdaptFactoryRegistry}会根据{@link AdaptFactory}
  * 上的{@link ManagerType}注解，加载对应的AdaptFactoryRegistrationManager实现来管理
  * {@link AdaptFactoryRegistration}。<br>
  * 缺省情况下，系统使用{@link GenericAdaptFactoryRegistrationManager}管理{@link AdaptFactoryRegistration}。<br>

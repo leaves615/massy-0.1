@@ -13,7 +13,7 @@ import org.smarabbit.massy.service.ServiceFactory;
 import org.smarabbit.massy.service.ServiceListener;
 import org.smarabbit.massy.service.ServiceRegistration;
 import org.smarabbit.massy.service.ServiceRegistrationManager;
-import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.service.ServiceRegistry;
 import org.smarabbit.massy.service.ServiceTypeNotMatchException;
 import org.smarabbit.massy.spec.Specification;
 import org.smarabbit.massy.util.ArrayUtils;
@@ -24,13 +24,13 @@ import org.smarabbit.massy.util.LogUtils;
  * @author huangkaihui
  *
  */
-public class DefaultServiceRepository extends
-		ServiceRegistrationManagerInitializer implements ServiceRepository {
+public class DefaultServiceRegistry extends
+		ServiceRegistrationManagerInitializer implements ServiceRegistry {
 
 	/**
 	 * 
 	 */
-	public DefaultServiceRepository() {
+	public DefaultServiceRegistry() {
 
 	}
 

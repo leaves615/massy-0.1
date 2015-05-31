@@ -45,8 +45,7 @@ public class AnnotationDrivenDefinitionParser implements BeanDefinitionParser {
 					.getBeanDefinition(ANNOTATIONDRIVENBEANPROCESSOR);
 		}catch(Exception e){
 			beanDefinition = new RootBeanDefinition();
-			beanDefinition.setBeanClass(AnnotationDrivenBeanProcessor.class);
-		
+			beanDefinition.setBeanClass(AnnotationDrivenBeanProcessor.class);		
 			parserContext.getRegistry().registerBeanDefinition(ANNOTATIONDRIVENBEANPROCESSOR, beanDefinition);
 		}
 	}

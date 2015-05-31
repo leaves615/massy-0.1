@@ -3,6 +3,9 @@
  */
 package org.smarabbit.massy.model.persistent;
 
+import java.sql.Connection;
+import java.sql.Statement;
+
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
@@ -18,12 +21,14 @@ public abstract class JdbcSchemaHandler extends AbstractPersistenceSchemaHandler
 	private static final Logger logger =
 			LoggerFactory.getLogger(JdbcSchemaHandler.class);
 	
+	private PersistenceSchema schema;
+	
 	/**
 	 * @param storeType
 	 */
 	public JdbcSchemaHandler(String storeType) {
 		super(storeType);
-
+		this.schema = this.createSchema();
 	}
 
 	/* (non-Javadoc)
@@ -31,13 +36,26 @@ public abstract class JdbcSchemaHandler extends AbstractPersistenceSchemaHandler
 	 */
 	@Override
 	public void buildSchema() throws Exception {
-		String alias = this.getAlias();
-		DataSource dataSource = this.getDataSource(alias);
-		if (dataSource != null){
-			this.doBuildSchema(dataSource);
-		}else{
-			if (logger.isWarnEnabled()){
-				logger.warn("cannot found datasource service :" + alias);
+		String[] ddls = this.schema.getDataDefinitionLanguages();
+		int size = ddls.length;
+		if (size >0){
+			String alias = this.getAlias();
+			DataSource dataSource = this.getDataSource(alias);
+			if (dataSource != null){
+				Connection conn = dataSource.getConnection();
+				conn.setAutoCommit(false);
+				Statement stmt = conn.createStatement();
+				
+				for (int i=0; i<size; i++) {
+					stmt.addBatch(ddls[i]);
+				}
+				
+				stmt.executeBatch();
+				conn.setAutoCommit(true);
+			}else{
+				if (logger.isWarnEnabled()){
+					logger.warn("cannot found datasource service :" + alias);
+				}
 			}
 		}
 	}
@@ -47,15 +65,30 @@ public abstract class JdbcSchemaHandler extends AbstractPersistenceSchemaHandler
 	 */
 	@Override
 	public void preprocess() throws Exception {
-		String alias = this.getAlias();
-		DataSource dataSource = this.getDataSource(alias);
-		if (dataSource != null){
-			this.doPreprocess(dataSource);
-		}else{
-			if (logger.isWarnEnabled()){
-				logger.warn("cannot found datasource service :" + alias);
+		String cmds[] = this.schema.getPreprocessCommands();
+		int size = cmds.length;
+		
+		if (size >0){
+			String alias = this.getAlias();
+			DataSource dataSource = this.getDataSource(alias);
+			if (dataSource != null){
+				Connection conn = dataSource.getConnection();
+				conn.setAutoCommit(false);
+				Statement stmt = conn.createStatement();
+				
+				for (int i=0; i<size; i++) {
+					stmt.addBatch(cmds[i]);
+				}
+				
+				stmt.executeBatch();
+				conn.setAutoCommit(true);
+			}else{
+				if (logger.isWarnEnabled()){
+					logger.warn("cannot found datasource service :" + alias);
+				}
 			}
 		}
+		
 	}
 	
 	protected DataSource getDataSource(String alias){
@@ -63,7 +96,6 @@ public abstract class JdbcSchemaHandler extends AbstractPersistenceSchemaHandler
 	}
 	
 	protected abstract String getAlias();
-	protected abstract void doBuildSchema(DataSource dataSource) throws Exception;
-	protected abstract void doPreprocess(DataSource dataSource) throws Exception;
+	protected abstract PersistenceSchema createSchema();
 
 }

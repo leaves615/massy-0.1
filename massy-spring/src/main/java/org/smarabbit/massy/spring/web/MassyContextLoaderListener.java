@@ -13,7 +13,7 @@ import org.smarabbit.massy.Constants;
 import org.smarabbit.massy.MassyUtils;
 import org.smarabbit.massy.launch.MassyLaunchException;
 import org.smarabbit.massy.service.ServiceRegistration;
-import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.service.ServiceRegistry;
 import org.smarabbit.massy.spring.MassyApplicationContext;
 import org.smarabbit.massy.spring.MassyResource;
 import org.smarabbit.massy.spring.context.MassyXmlWebApplicationContext;
@@ -71,8 +71,8 @@ public class MassyContextLoaderListener extends ContextLoaderListener {
 			
 			//注册ApplicationContext服务
 			try {
-				ServiceRepository repository = MassyUtils.getDefaultContext().getService(ServiceRepository.class);
-				this.registration = repository.register(ApplicationContext.class, wac, props);
+				ServiceRegistry registry = MassyUtils.getDefaultContext().getService(ServiceRegistry.class);
+				this.registration = registry.register(ApplicationContext.class, wac, props);
 			} catch (Exception e) {
 				throw new MassyLaunchException(e.getMessage(),e);
 			}

@@ -85,16 +85,15 @@ public class ImportServiceTransformer extends FieldTransformer {
 		 */
 		@Override
 		public void edit(FieldAccess f) throws CannotCompileException {
-			//写方法退出
-			if (f.isWriter()) return;
-			
-			String fName = f.getFieldName();
-			
-			
-			
-			String fieldName = "this." + fName;
-			
 			try{
+				if (f.getField() != this.field) return;
+				
+				//写方法退出
+				if (f.isWriter()) return;
+				String fName = f.getFieldName();
+				String fieldName = "this." + fName;
+			
+			
 				String serviceType = anno.serviceType() == Void.class ?
 						"$type" : 
 							anno.serviceType().getName() + ".class";

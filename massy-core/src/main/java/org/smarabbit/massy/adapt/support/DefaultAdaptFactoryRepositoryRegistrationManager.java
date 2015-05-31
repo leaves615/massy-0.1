@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.smarabbit.massy.adapt.AdaptFactoryRepository;
+import org.smarabbit.massy.adapt.AdaptFactoryRegistry;
 import org.smarabbit.massy.service.ServiceRegistration;
 import org.smarabbit.massy.service.support.AbstractServiceRegistration;
 import org.smarabbit.massy.service.support.AbstractServiceRegistrationManager;
@@ -20,7 +20,7 @@ import org.smarabbit.massy.util.LogUtils;
  *
  */
 public class DefaultAdaptFactoryRepositoryRegistrationManager extends
-		AbstractServiceRegistrationManager<AdaptFactoryRepository> {
+		AbstractServiceRegistrationManager<AdaptFactoryRegistry> {
 	
 	private List<ServiceRegistration> list;
 
@@ -29,7 +29,7 @@ public class DefaultAdaptFactoryRepositoryRegistrationManager extends
 		this.list = new ArrayList<ServiceRegistration>();
 		long id = ServiceReferenceCounterFactory.getReferenceCount().get();
 		this.list.add(
-				new RegistrationImpl(id, new Class<?>[]{AdaptFactoryRepository.class},
+				new RegistrationImpl(id, new Class<?>[]{AdaptFactoryRegistry.class},
 						new DefaultAdaptFactoryRepository(), null)
 				);
 	}

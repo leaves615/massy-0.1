@@ -11,7 +11,7 @@ import java.util.concurrent.CountDownLatch;
 
 import org.smarabbit.massy.Constants;
 import org.smarabbit.massy.MassyUtils;
-import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.service.ServiceRegistry;
 import org.smarabbit.massy.spring.context.MassyXmlApplicationContext;
 import org.smarabbit.massy.util.Asserts;
 import org.springframework.context.ApplicationContext;
@@ -27,7 +27,7 @@ public class MultithreadingBatchLoader {
 	private final Collection<ApplicationContext> applicationContexts;
 	private Collection<MassyResource> resources;
 	
-	private ServiceRepository serviceRepo;
+	private ServiceRegistry serviceRegistry;
 	
 	private Exception exception;
 	/**
@@ -36,7 +36,7 @@ public class MultithreadingBatchLoader {
 	public MultithreadingBatchLoader(Collection<ApplicationContext> applicationContexts) {
 		Asserts.argumentNotNull(applicationContexts, "applicationContexts");
 		
-		this.serviceRepo = MassyUtils.getDefaultContext().getService(ServiceRepository.class);
+		this.serviceRegistry = MassyUtils.getDefaultContext().getService(ServiceRegistry.class);
 		this.applicationContexts = applicationContexts;
 		
 	}
@@ -103,7 +103,7 @@ public class MultithreadingBatchLoader {
 				props.put(Constants.SERVICE_CONTAINER, CONTAINER);
 				props.put(Constants.SERVICE_CONFIGFILE, MassyResource.getConfigurationFile(resource));
 	
-				MultithreadingBatchLoader.this.serviceRepo.register(
+				MultithreadingBatchLoader.this.serviceRegistry.register(
 						ApplicationContext.class, applicationContext, props);
 				applicationContexts.add(applicationContext);
 			} catch (Exception e) {

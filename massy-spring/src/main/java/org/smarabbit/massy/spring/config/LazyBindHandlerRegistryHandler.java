@@ -5,11 +5,12 @@ package org.smarabbit.massy.spring.config;
 
 import org.smarabbit.massy.MassyUtils;
 import org.smarabbit.massy.Registration;
+import org.smarabbit.massy.annotation.LazyBindHandler;
 import org.smarabbit.massy.annotation.support.Definition;
 import org.smarabbit.massy.annotation.support.LazyBindHandlerDefinition;
 import org.smarabbit.massy.bytecode.proxy.LazyBinderFactory;
 import org.smarabbit.massy.lazyload.LazyBinder;
-import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.service.ServiceRegistry;
 import org.smarabbit.massy.spring.MassyResource;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -21,8 +22,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  */
 public class LazyBindHandlerRegistryHandler implements BeanRegistryHandler {
 
-	private static final ServiceRepository SERVICEREPOSITORY =
-			MassyUtils.getDefaultContext().getService(ServiceRepository.class);
+	private static final ServiceRegistry SERVICEREGISTRY =
+			MassyUtils.getDefaultContext().getService(ServiceRegistry.class);
 	
 	/**
 	 * 
@@ -50,7 +51,7 @@ public class LazyBindHandlerRegistryHandler implements BeanRegistryHandler {
 		LazyBinder<Object> binder;
 		try {
 			binder = LazyBinderFactory.create(handler, lbhd);
-			return SERVICEREPOSITORY.register(LazyBinder.class, binder, null);
+			return SERVICEREGISTRY.register(LazyBinder.class, binder, null);
 		} catch (Exception e) {
 			throw new FatalBeanException(e.getMessage(),e);
 		}

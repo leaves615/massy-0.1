@@ -11,7 +11,7 @@ import org.smarabbit.massy.Constants;
 import org.smarabbit.massy.MassyUtils;
 import org.smarabbit.massy.Registration;
 import org.smarabbit.massy.launch.MassyLaunchException;
-import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.service.ServiceRegistry;
 import org.smarabbit.massy.spring.MassyApplicationContext;
 import org.smarabbit.massy.spring.MassyResource;
 import org.smarabbit.massy.spring.context.MassyXmlWebApplicationContext;
@@ -68,8 +68,8 @@ public class MassyDispatcherServlet extends DispatcherServlet {
 		
 		try{
 			//注册ApplicationContext服务
-			ServiceRepository repository = MassyUtils.getDefaultContext().getService(ServiceRepository.class);
-			this.registration = repository.register(ApplicationContext.class, wac, props);
+			ServiceRegistry registry = MassyUtils.getDefaultContext().getService(ServiceRegistry.class);
+			this.registration = registry.register(ApplicationContext.class, wac, props);
 		}catch(Exception e){
 				throw new MassyLaunchException( e);
 		}

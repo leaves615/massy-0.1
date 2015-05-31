@@ -8,7 +8,7 @@ import java.util.HashMap;
 import org.smarabbit.massy.Constants;
 import org.smarabbit.massy.MassyUtils;
 import org.smarabbit.massy.service.ServiceRegistration;
-import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.service.ServiceRegistry;
 import org.smarabbit.massy.spring.MassyApplicationContext;
 import org.smarabbit.massy.spring.MassyResource;
 import org.springframework.beans.BeansException;
@@ -73,8 +73,8 @@ public abstract class AutoRegistryFactoryBean<T> extends AbstractFactoryBean<T>
 			props.put(Constants.SERVICE_CONTAINER, "spring");
 			props.put(Constants.SERVICE_CONFIGFILE, this.resource.getName());
 		}
-		ServiceRepository repo = MassyUtils.getDefaultContext().getService(ServiceRepository.class);
-		return repo.register(this.getServiceTypes(), service, props);
+		ServiceRegistry registry = MassyUtils.getDefaultContext().getService(ServiceRegistry.class);
+		return registry.register(this.getServiceTypes(), service, props);
 	}
 	
 	protected abstract Class<?>[] getServiceTypes();

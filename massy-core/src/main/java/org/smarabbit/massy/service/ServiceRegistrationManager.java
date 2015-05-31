@@ -11,7 +11,7 @@ import org.smarabbit.massy.spec.Specification;
  * 管理同服务类型的{@link ServiceRegistration}，并提供服务查询和获取的方法.
  * 
  * <br>
- * 注册服务时，{@link ServiceRepository}会根据服务类型
+ * 注册服务时，{@link ServiceRegistry}会根据服务类型
  * 上的{@link ManagerType}注解，加载对应的ServiceRegistrationManager实现来管理
  * {@link ServiceRegistration}。<br>
  * 缺省情况下，系统使用{@link GenericServiceFactoryRegistrationManager}管理{@link ServiceRegistration}。<br>

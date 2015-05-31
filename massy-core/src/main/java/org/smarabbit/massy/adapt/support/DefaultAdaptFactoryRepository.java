@@ -9,7 +9,7 @@ import org.smarabbit.massy.Descriptor;
 import org.smarabbit.massy.adapt.AdaptFactory;
 import org.smarabbit.massy.adapt.AdaptFactoryRegistration;
 import org.smarabbit.massy.adapt.AdaptFactoryRegistrationManager;
-import org.smarabbit.massy.adapt.AdaptFactoryRepository;
+import org.smarabbit.massy.adapt.AdaptFactoryRegistry;
 import org.smarabbit.massy.adapt.RegisterAdaptFactoryException;
 import org.smarabbit.massy.spec.Specification;
 import org.smarabbit.massy.util.Asserts;
@@ -21,7 +21,7 @@ import org.smarabbit.massy.util.LogUtils;
  */
 public class DefaultAdaptFactoryRepository extends
 		AdaptFactoryRegistrationManagerInitializer implements
-		AdaptFactoryRepository {
+		AdaptFactoryRegistry {
 
 	/**
 	 * 

@@ -24,7 +24,7 @@ import org.smarabbit.massy.Constants;
 import org.smarabbit.massy.MassyContext;
 import org.smarabbit.massy.MassyException;
 import org.smarabbit.massy.adapt.AdaptFactoryRegistration;
-import org.smarabbit.massy.adapt.AdaptFactoryRepository;
+import org.smarabbit.massy.adapt.AdaptFactoryRegistry;
 import org.smarabbit.massy.annotation.Order;
 import org.smarabbit.massy.launch.MassyContextInitializer;
 import org.smarabbit.massy.launch.MassyContextInitializerChain;
@@ -33,7 +33,7 @@ import org.smarabbit.massy.model.CurrentUser;
 import org.smarabbit.massy.support.OrderComparator;
 import org.smarabbit.massy.support.Ordered;
 import org.smarabbit.massy.service.ServiceRegistration;
-import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.service.ServiceRegistry;
 import org.smarabbit.massy.util.CollectionUtils;
 
 /**
@@ -59,11 +59,11 @@ public class ShiroContextInitializer implements MassyContextInitializer {
 			MassyContextInitializerChain chain) throws MassyLaunchException {
 		chain.proceed(context, initParams);
 		
-		ServiceRepository repository = context.getService(ServiceRepository.class);
-		if (!this.hasServletContext(repository)){
+		ServiceRegistry registry = context.getService(ServiceRegistry.class);
+		if (!this.hasServletContext(registry)){
 			//非ServletContext模式下，创建Shiro安全组件
 			try{			
-				this.registerSecurityManager(repository);
+				this.registerSecurityManager(registry);
 			}catch(Exception e){
 				throw new MassyLaunchException(e.getMessage(),e);
 			}
@@ -73,10 +73,10 @@ public class ShiroContextInitializer implements MassyContextInitializer {
 	}
 	
 	protected AdaptFactoryRegistration<?> registerCurrentUserAdaptFactory(MassyContext context){
-		AdaptFactoryRepository repository =
-				context.getService(AdaptFactoryRepository.class);
+		AdaptFactoryRegistry registry =
+				context.getService(AdaptFactoryRegistry.class);
 		
-		return repository.register(CurrentUser.class, new CurrentUserAdaptFactory(), null);
+		return registry.register(CurrentUser.class, new CurrentUserAdaptFactory(), null);
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class ShiroContextInitializer implements MassyContextInitializer {
 	 * @throws IOException 
 	 * @throws ConfigurationException 
 	 */
-	protected ServiceRegistration registerSecurityManager(ServiceRepository repository) 
+	protected ServiceRegistration registerSecurityManager(ServiceRegistry registry) 
 			throws Exception{
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		URL url = loader.getResource(INIPATH);
@@ -103,12 +103,12 @@ public class ShiroContextInitializer implements MassyContextInitializer {
         if (factory.getInstance() instanceof DefaultSecurityManager){
         	DefaultSecurityManager securityManager =(DefaultSecurityManager)factory.getInstance();
         	//绑定Realm
-        	this.bindRealms(repository, securityManager);
+        	this.bindRealms(registry, securityManager);
         }
         
         Map<String, Object> props = new HashMap<String, Object>();
         props.put(Constants.DESCRIPTION, "shiro安全管理组件");
-       return repository.register(SecurityManager.class, factory.getInstance(), props);
+       return registry.register(SecurityManager.class, factory.getInstance(), props);
 	}
 	
 	/**
@@ -116,9 +116,9 @@ public class ShiroContextInitializer implements MassyContextInitializer {
 	 * @param repository
 	 * @param securityManager
 	 */
-	protected void bindRealms(ServiceRepository repository, DefaultSecurityManager securityManager){
+	protected void bindRealms(ServiceRegistry registry, DefaultSecurityManager securityManager){
 		//查找所有Realm服务
-		Realm[] realms =repository.getAllServices(Realm.class);
+		Realm[] realms =registry.getAllServices(Realm.class);
 		List<Realm> list = Arrays.asList(realms);
 		
 		//附加SecurityManager的Realms
@@ -143,15 +143,15 @@ public class ShiroContextInitializer implements MassyContextInitializer {
 	/**
 	 * 判断是否存在ServletContext上下文
 	 * @param repository
-	 * 			{@link ServiceRepository}，服务仓储
+	 * 			{@link ServiceRegistry}，服务仓储
 	 * @return
 	 * 			true表示存在，false表示不存在
 	 */
-	protected boolean hasServletContext(ServiceRepository repository){
+	protected boolean hasServletContext(ServiceRegistry registry){
 		try{
 			//通过是否存在ServletContext服务来判断
 			Class<?> serviceType = Thread.currentThread().getContextClassLoader().loadClass("javax.servlet.ServletContext");
-			return repository.findService(serviceType) != null;
+			return registry.findService(serviceType) != null;
 		}catch(Throwable e){
 			return false;
 		}

@@ -17,7 +17,7 @@ import org.smarabbit.massy.spec.Specification;
  * @author huangkaihui
  *
  */
-public interface ServiceRepository {
+public interface ServiceRegistry {
 
 	/**
 	 * 获取所有服务类型

@@ -5,7 +5,7 @@ package org.smarabbit.massy;
 
 /**
  * 模块化执行环境的上下文，为模块化应用提供服务获取能力。<br>
- * {@link org.smarabbit.massy.service.ServiceRepository}提供服务注册和查找，
+ * {@link org.smarabbit.massy.service.ServiceRegistry}提供服务注册和查找，
  * 上下文简化服务获取的方法，并在服务不存在时抛出异常。<br>
  * 服务注册后，其他模块就可以从上下文处得到服务的引用，搭建起模块之间的联系。
  * 
@@ -40,7 +40,7 @@ public interface MassyContext extends Descriptable{
 	 * 服务注册时，按服务类型进行归类管理，同服务类型允许注册多个服务实例。使用本方法
 	 * 查询服务时，先返回首个别名为null的服务，如无别名为null的服务，则返回首个服务。
 	 * <br>
-	 * 如果期望方法不抛出异常，请使用{@link org.smarabbit.massy.service.ServiceRepository#findService(Class)}方法。
+	 * 如果期望方法不抛出异常，请使用{@link org.smarabbit.massy.service.ServiceRegistry#findService(Class)}方法。
 	 * @param serviceType 
 	 * 		服务类型，非空
 	 * @return 
@@ -54,10 +54,10 @@ public interface MassyContext extends Descriptable{
 	 * 按服务类型和别名获取已注册的服务，服务不存在则会抛出异常。
 	 * <br>
 	 * 服务别名，是区分其他同类型服务的方式之一，除此之外，还可以通过
-	 * {@link org.smarabbit.massy.service.ServiceRepository#findService(Class, org.smarabbit.massy.spec.Specification)}
+	 * {@link org.smarabbit.massy.service.ServiceRegistry#findService(Class, org.smarabbit.massy.spec.Specification)}
 	 * 方法查找服务。
 	 * <br>
-	 * 如果期望方法不抛出异常，请使用{@link org.smarabbit.massy.service.ServiceRepository#findService(Class, String)}方法。
+	 * 如果期望方法不抛出异常，请使用{@link org.smarabbit.massy.service.ServiceRegistry#findService(Class, String)}方法。
 	 * @param serviceType
 	 * 		服务类型，非空
 	 * @param alias

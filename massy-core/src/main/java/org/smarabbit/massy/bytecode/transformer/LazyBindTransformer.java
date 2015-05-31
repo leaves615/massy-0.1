@@ -66,13 +66,16 @@ public class LazyBindTransformer extends FieldTransformer {
 		 */
 		@Override
 		public void edit(FieldAccess f) throws CannotCompileException {
-			//写方法退出
-			if (f.isWriter()) return;
-						
-			String className = this.field.getDeclaringClass().getName() + ".class";
-			String fName = f.getFieldName();
-			String fieldName = "this." + fName;
 			try{
+				//字段不同退出
+				if (f.getField() != field) return;			
+				//写方法退出
+				if (f.isWriter()) return;
+		
+				String className = this.field.getDeclaringClass().getName() + ".class";
+				String fName = f.getFieldName();
+				String fieldName = "this." + fName;
+			
 				StringBuffer buff = new StringBuffer();
 				buff.append("{\n")
 					.append("\t").append("if (").append(fieldName).append(" == null){").append("\n")

@@ -8,8 +8,8 @@ import java.util.Map;
 import org.smarabbit.massy.Descriptor;
 import org.smarabbit.massy.MassyContext;
 import org.smarabbit.massy.ServiceNotFoundException;
-import org.smarabbit.massy.service.ServiceRepository;
-import org.smarabbit.massy.service.support.DefaultServiceRepository;
+import org.smarabbit.massy.service.ServiceRegistry;
+import org.smarabbit.massy.service.support.DefaultServiceRegistry;
 import org.smarabbit.massy.util.Asserts;
 
 /**
@@ -20,11 +20,11 @@ import org.smarabbit.massy.util.Asserts;
  */
 public class DefaultMassyContext implements MassyContext {
 
-	private final ServiceRepository serviceRepository;
+	private final ServiceRegistry registry;
 	private final Descriptor descriptor;
 	
 	public DefaultMassyContext(Map<String, Object> initParams){
-		this(initParams, new DefaultServiceRepository());
+		this(initParams, new DefaultServiceRegistry());
 	}
 	
 	/**
@@ -32,12 +32,12 @@ public class DefaultMassyContext implements MassyContext {
 	 */
 	public DefaultMassyContext(
 			Map<String, Object> initParams,
-			ServiceRepository serviceRepository) {
-		Asserts.argumentNotNull(serviceRepository, "serviceRepository");
+			ServiceRegistry registry) {
+		Asserts.argumentNotNull(registry, "registry");
 		Asserts.argumentNotNull(initParams, "initParams");
 		
 		this.descriptor = new SimpleDescriptor(initParams);
-		this.serviceRepository = serviceRepository;
+		this.registry = registry;
 	}
 
 	/* (non-Javadoc)
@@ -54,7 +54,7 @@ public class DefaultMassyContext implements MassyContext {
 	@Override
 	public <S> S[] getAllServices(Class<S> serviceType) {
 		Asserts.argumentNotNull(serviceType, "serviceType");		
-		return this.serviceRepository.getAllServices(serviceType);
+		return this.registry.getAllServices(serviceType);
 	}
 
 	/* (non-Javadoc)
@@ -67,12 +67,12 @@ public class DefaultMassyContext implements MassyContext {
 		Asserts.argumentNotNull(serviceType, "serviceType");
 		
 		//获取的是ServiceRepository服务
-		if (serviceType == ServiceRepository.class){
-			return (S) this.serviceRepository;
+		if (serviceType == ServiceRegistry.class){
+			return (S) this.registry;
 		}
 		
 		return this.assertServiceNotNull(
-				this.serviceRepository.findService(serviceType),
+				this.registry.findService(serviceType),
 				serviceType,
 				null);
 	}
@@ -87,11 +87,11 @@ public class DefaultMassyContext implements MassyContext {
 		Asserts.argumentNotNull(serviceType, "serviceType");
 		
 		//获取的是ServiceRepository服务
-		if (serviceType == ServiceRepository.class){
-			return (S) this.serviceRepository;
+		if (serviceType == ServiceRegistry.class){
+			return (S) this.registry;
 		}
 		return this.assertServiceNotNull(
-				this.serviceRepository.findService(serviceType, alias),
+				this.registry.findService(serviceType, alias),
 				serviceType,
 				alias);
 	}

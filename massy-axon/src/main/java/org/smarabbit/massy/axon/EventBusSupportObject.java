@@ -3,9 +3,10 @@
  */
 package org.smarabbit.massy.axon;
 
+import javax.annotation.Resource;
+
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
-import org.smarabbit.massy.annotation.ImportService;
 
 /**
  * {@link EventBus}支持对象，提供同步和异步发送事件方法
@@ -14,7 +15,6 @@ import org.smarabbit.massy.annotation.ImportService;
  */
 public class EventBusSupportObject {
 
-	@ImportService
 	private EventBus eventBus;
 	
 	/**
@@ -41,10 +41,10 @@ public class EventBusSupportObject {
 
 			@Override
 			public void run() {
-				EventBusSupportObject.this.sendEvent(event);
+				sendEvent(event);
 			}
 			
-		});
+		}).start();;
 	}
 
 	/**
@@ -57,6 +57,7 @@ public class EventBusSupportObject {
 	/**
 	 * @param eventBus the eventBus to set
 	 */
+	@Resource(type= EventBus.class)
 	public void setEventBus(EventBus eventBus) {
 		this.eventBus = eventBus;
 	}

@@ -12,7 +12,7 @@ import org.smarabbit.massy.Registration;
 import org.smarabbit.massy.annotation.support.Definition;
 import org.smarabbit.massy.annotation.support.ExportServiceDefinition;
 import org.smarabbit.massy.service.ServiceFactory;
-import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.service.ServiceRegistry;
 import org.smarabbit.massy.spring.MassyResource;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -24,8 +24,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  */
 public class ExportServiceRegistryHandler implements BeanRegistryHandler {
 
-	protected static final ServiceRepository SERVICEREPOSITORY =
-			MassyUtils.getDefaultContext().getService(ServiceRepository.class);
+	protected static final ServiceRegistry SERVICEREGISTRY =
+			MassyUtils.getDefaultContext().getService(ServiceRegistry.class);
 		
 	/**
 	 * 
@@ -69,7 +69,7 @@ public class ExportServiceRegistryHandler implements BeanRegistryHandler {
 				new PrototypeBeanServiceFactory(beanName, factory) :
 					new BeanServiceFactory(beanName, factory);
 										
-		return SERVICEREPOSITORY.register(esd.getServiceTypes(), service, props);
+		return SERVICEREGISTRY.register(esd.getServiceTypes(), service, props);
 	}
 
 }

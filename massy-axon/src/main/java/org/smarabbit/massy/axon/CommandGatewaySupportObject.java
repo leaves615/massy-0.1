@@ -3,6 +3,8 @@
  */
 package org.smarabbit.massy.axon;
 
+import javax.annotation.Resource;
+
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.smarabbit.massy.util.Asserts;
 
@@ -36,6 +38,7 @@ public class CommandGatewaySupportObject {
 	/**
 	 * @param commandGateway the commandGateway to set
 	 */
+	@Resource(type = CommandGateway.class)
 	public void setCommandGateway(CommandGateway commandGateway) {
 		this.commandGateway = commandGateway;
 	}

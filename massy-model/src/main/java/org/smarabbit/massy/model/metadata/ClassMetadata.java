@@ -25,6 +25,7 @@ public class ClassMetadata {
 	public ClassMetadata(Class<?> type) {
 		Asserts.argumentNotNull(type, "type");
 		this.type = type;
+		this.init();
 	}
 
 	public Class<?> getType(){
@@ -58,8 +59,8 @@ public class ClassMetadata {
 		for (Field field: fields){
 			if (!Modifier.isTransient(field.getModifiers())){
 				if (!Modifier.isStatic(field.getModifiers())){
-					FieldMetadata metadata = new FieldMetadata(field);
-					this.fields.put(metadata.getName(), metadata);
+						FieldMetadata metadata = new FieldMetadata(field);
+						this.fields.put(metadata.getName(), metadata);
 				}
 			}
 		}

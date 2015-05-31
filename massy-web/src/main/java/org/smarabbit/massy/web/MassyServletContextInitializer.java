@@ -30,7 +30,7 @@ import org.smarabbit.massy.launch.MassyContextInitializer;
 import org.smarabbit.massy.launch.MassyContextInitializerChain;
 import org.smarabbit.massy.launch.MassyLaunchException;
 import org.smarabbit.massy.launch.MassyLauncher;
-import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.service.ServiceRegistry;
 import org.smarabbit.massy.util.LogUtils;
 
 /**
@@ -120,12 +120,12 @@ public class MassyServletContextInitializer implements
 		@Override
 		public void onInit(MassyContext context, Map<String, Object> initParams, 
 				MassyContextInitializerChain chain) throws MassyException {
-			ServiceRepository repository = context.getService(ServiceRepository.class);
+			ServiceRegistry registry = context.getService(ServiceRegistry.class);
 			Map<String, Object> props = new HashMap<String, Object>();
 			props.put(Constants.DESCRIPTION, 
 					"Servlet上下文，提供Web应用所需的Servlet、Filter、Listener、Session等的管理。");
 			try {
-				repository.register(ServletContext.class, sc, props);
+				registry.register(ServletContext.class, sc, props);
 			} catch (Exception e) {
 
 				throw new MassyLaunchException(e.getMessage(),e);

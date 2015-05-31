@@ -3,7 +3,9 @@
  */
 package org.smarabbit.massy.spring.config;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.smarabbit.massy.Registration;
 import org.smarabbit.massy.annotation.support.Definition;
@@ -16,7 +18,11 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.SmartLifecycle;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 
 /**
@@ -26,13 +32,16 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  */
 public class AnnotationDrivenBeanProcessor 
 	extends BeanRegistryHandlerLoader
-	implements DestructionAwareBeanPostProcessor, BeanFactoryPostProcessor, ApplicationContextAware, SmartLifecycle {
+	implements DestructionAwareBeanPostProcessor, BeanFactoryPostProcessor, ApplicationContextAware, 
+	ApplicationListener<ApplicationEvent>, SmartLifecycle {
 	
 	private ApplicationContext applicationContext;
 	private ConfigurableListableBeanFactory beanFactory;
 	private volatile boolean running = false;
     private int phase = 0;
     private MassyResource resource;
+    
+    private Map<String, ProcessingPoint> beanNameMap;
     
     private BeanRegistrationManager registrationManager = 
     		new DefaultBeanRegistrationManager();
@@ -41,6 +50,7 @@ public class AnnotationDrivenBeanProcessor
 	 * 
 	 */
 	public AnnotationDrivenBeanProcessor() {
+		this.beanNameMap = new HashMap<String, ProcessingPoint>();
 	}
 
 	/* (non-Javadoc)
@@ -50,6 +60,7 @@ public class AnnotationDrivenBeanProcessor
 	public void postProcessBeanFactory(
 			ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;		
+		
 	}
 
 	@Override
@@ -61,11 +72,86 @@ public class AnnotationDrivenBeanProcessor
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
+		//标记Bean已经在BeanProcessor相关方法中处理
+		this.beanNameMap.put(beanName, ProcessingPoint.BEANPROCESSOR);
 		
 		Class<?> beanType = bean.getClass();
 		DefaultBeanDefinitionManager definitionManager = 
 				DefaultBeanDefinitionManagerUtils.getBeanDefinitionManager(this.beanFactory);
+		this.doRegister(beanName, beanType, beanFactory, definitionManager);
+		return bean;
+	}
+	
+	@Override
+	public void postProcessBeforeDestruction(Object bean, String beanName)
+			throws BeansException {
+		//清除并撤销Bean的所有注册
+		this.doUnregister(beanName);
+	}
+			
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		this.applicationContext = applicationContext;
+		AbstractRefreshableApplicationContext appContext = 
+				(AbstractRefreshableApplicationContext)applicationContext;
+		this.beanFactory = appContext.getBeanFactory();
+		if (this.applicationContext instanceof MassyApplicationContext){
+			this.resource = ((MassyApplicationContext)this.applicationContext).getMassyResource();
+		}
+	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see org.springframework.context.ApplicationListener#onApplicationEvent(org.springframework.context.ApplicationEvent)
+	 */
+	@Override
+	public void onApplicationEvent(ApplicationEvent event) {
+		if (event instanceof ContextRefreshedEvent){
+			this.onContextRefreshed((ContextRefreshedEvent)event);
+		}
 		
+		if (event instanceof ContextClosedEvent){
+			this.onContextClosed((ContextClosedEvent)event);
+		}
+	}
+	
+	/**
+	 * Application Refreshed 事件处理
+	 * <br>
+	 * 如果Bean在其他BeanFactoryPostProcessor中被实例化，
+	 * 则BeanPostProcessor无法拦截该Bean的初始化方法。
+	 * 本方法则对该类的Bean补充需要注册处理的过程
+	 * @param event
+	 */
+	protected void onContextRefreshed(ContextRefreshedEvent event){
+		DefaultBeanDefinitionManager definitionManager = 
+				DefaultBeanDefinitionManagerUtils.getBeanDefinitionManager(this.beanFactory);
+		String[] beanNames = this.beanFactory.getBeanDefinitionNames();
+		int size = beanNames.length;
+		for (int i=0; i<size; i++){
+			String beanName = beanNames[i];
+			//检查bean的处理点
+			if (!this.beanNameMap.containsKey(beanName)){
+				this.beanNameMap.put(beanName, ProcessingPoint.CONTEXTREFRESHED);
+				Class<?> beanType = this.beanFactory.getType(beanName);
+				if (beanType != null){
+					this.doRegister(beanName, beanType, beanFactory, definitionManager);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 执行注册
+	 * @param beanName bean名称
+	 * @param beanType bean类型
+	 * @param beanFactory bean工厂
+	 * @param definitionManager 定义管理器
+	 */
+	protected void doRegister(String beanName, Class<?> beanType, ConfigurableListableBeanFactory beanFactory, 
+			DefaultBeanDefinitionManager definitionManager){		
 		//按Definition执行注册
 		Definition[] definitions = definitionManager.getDefinitions(beanName, beanType);
 		if (definitions.length != 0){
@@ -82,28 +168,37 @@ public class AnnotationDrivenBeanProcessor
 				}
 			}
 		}
-		return bean;
 	}
 	
-	@Override
-	public void postProcessBeforeDestruction(Object bean, String beanName)
-			throws BeansException {
-		//清除并撤销Bean的所有注册
-		this.registrationManager.unregister(beanName);
-	}
-			
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.applicationContext = applicationContext;
-		AbstractRefreshableApplicationContext appContext = 
-				(AbstractRefreshableApplicationContext)applicationContext;
-		this.beanFactory = appContext.getBeanFactory();
-		if (this.applicationContext instanceof MassyApplicationContext){
-			this.resource = ((MassyApplicationContext)this.applicationContext).getMassyResource();
+	/**
+	 * Application Closed 事件处理
+	 * <br>
+	 * 如果Bean在其他BeanFactoryPostProcessor中被实例化，
+	 * 则DestructionAwareBeanPostProcessor无法拦截该Bean的释放方法。
+	 * 本方法则对该类的Bean补充需要取消注册处理的过程
+	 * @param event
+	 */
+	protected void onContextClosed(ContextClosedEvent event){
+		String[] beanNames = this.beanFactory.getBeanDefinitionNames();
+		int size = beanNames.length;
+		for (int i=0; i<size; i++){
+			String beanName = beanNames[i];
+			ProcessingPoint point = this.beanNameMap.get(beanName);
+			if (ProcessingPoint.CONTEXTREFRESHED.equals(point)){
+				this.beanNameMap.remove(beanName);
+				this.doUnregister(beanName);
+			}
 		}
 	}
 	
+	/**
+	 * 取消注册
+	 * @param beanName
+	 */
+	protected void doUnregister(String beanName){
+		this.registrationManager.unregister(beanName);
+	}
+
 	@Override
 	public int getPhase() {
 		return phase;
@@ -150,5 +245,23 @@ public class AnnotationDrivenBeanProcessor
 	
 	protected ConfigurableListableBeanFactory getBeanFactory(){
 		return Asserts.ensureFieldInited(this.beanFactory, "beanFactory");
+	}
+	
+	/**
+	 * 处理点
+	 * @author huangkaihui
+	 *
+	 */
+	private enum ProcessingPoint {
+		
+		/**
+		 * 在Bean处理器中处理
+		 */
+		BEANPROCESSOR,
+		
+		/**
+		 * 在ContextRefreshed事件中处理
+		 */
+		CONTEXTREFRESHED
 	}
 }

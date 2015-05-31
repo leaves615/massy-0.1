@@ -10,7 +10,7 @@ import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.smarabbit.massy.Constants;
 import org.smarabbit.massy.MassyUtils;
 import org.smarabbit.massy.service.ServiceRegistration;
-import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.service.ServiceRegistry;
 import org.smarabbit.massy.spring.MassyApplicationContext;
 import org.smarabbit.massy.spring.MassyResource;
 import org.springframework.beans.BeansException;
@@ -76,7 +76,7 @@ public class CommandGatewayExFactoryBean extends CommandGatewayFactoryBean<Comma
 			props.put(Constants.SERVICE_CONTAINER, "spring");
 			props.put(Constants.SERVICE_CONFIGFILE, this.resource.getName());
 		}
-		ServiceRepository repo = MassyUtils.getDefaultContext().getService(ServiceRepository.class);
-		return repo.register(new Class<?>[]{CommandGateway.class}, service, props);
+		ServiceRegistry registry = MassyUtils.getDefaultContext().getService(ServiceRegistry.class);
+		return registry.register(new Class<?>[]{CommandGateway.class}, service, props);
 	}
 }

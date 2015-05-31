@@ -3,12 +3,12 @@
  */
 package org.smarabbit.massy;
 
-import org.smarabbit.massy.adapt.AdaptFactoryRepository;
+import org.smarabbit.massy.adapt.AdaptFactoryRegistry;
 import org.smarabbit.massy.adapt.AdaptNotSupportException;
 import org.smarabbit.massy.launch.DefaultMassyLauncher;
 import org.smarabbit.massy.launch.MassyLaunchException;
 import org.smarabbit.massy.launch.MassyLauncher;
-import org.smarabbit.massy.service.ServiceRepository;
+import org.smarabbit.massy.service.ServiceRegistry;
 import org.smarabbit.massy.util.Asserts;
 import org.smarabbit.massy.util.ServiceLoaderUtils;
 
@@ -20,8 +20,8 @@ import org.smarabbit.massy.util.ServiceLoaderUtils;
 public abstract class MassyUtils {
 
 	private static MassyContext INSTANCE;
-	private static AdaptFactoryRepository adaptRepo;
-	private static ServiceRepository serviceRepo;
+	private static AdaptFactoryRegistry adaptRegistry;
+	private static ServiceRegistry serviceRegistry;
 	
 	/**
 	 * 获取{@link MassyContext}
@@ -42,8 +42,8 @@ public abstract class MassyUtils {
 			INSTANCE = context;
 			
 			if (INSTANCE != null){
-				adaptRepo = INSTANCE.getService(AdaptFactoryRepository.class);
-				serviceRepo = INSTANCE.getService(ServiceRepository.class);
+				adaptRegistry = INSTANCE.getService(AdaptFactoryRegistry.class);
+				serviceRegistry = INSTANCE.getService(ServiceRegistry.class);
 			}
 		}
 	}
@@ -60,7 +60,7 @@ public abstract class MassyUtils {
 	public static <A> A adapt(Object target, Class<A> adaptType){
 		checkStart();
 		
-		return adaptRepo.adapt(target, adaptType);
+		return adaptRegistry.adapt(target, adaptType);
 	}
 	
 	/**
@@ -91,8 +91,8 @@ public abstract class MassyUtils {
 		Asserts.argumentNotNull(serviceType,"serviceType");
 		if (allowNull){
 			return alias == null ?
-					serviceRepo.findService(serviceType) :
-						serviceRepo.findService(serviceType, alias);
+					serviceRegistry.findService(serviceType) :
+						serviceRegistry.findService(serviceType, alias);
 		}else{
 			return alias == null ?
 					INSTANCE.getService(serviceType) :
@@ -115,7 +115,7 @@ public abstract class MassyUtils {
 		throws AdaptNotSupportException{
 		checkStart();
 		
-		A result = adaptRepo.adapt(target, adaptType);
+		A result = adaptRegistry.adapt(target, adaptType);
 		if (result == null){
 			throw new AdaptNotSupportException(target.getClass(), adaptType);
 		}

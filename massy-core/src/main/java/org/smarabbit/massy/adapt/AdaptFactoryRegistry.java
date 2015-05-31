@@ -18,7 +18,7 @@ import org.smarabbit.massy.spec.Specification;
  * @author huangkh
  *
  */
-public interface AdaptFactoryRepository{
+public interface AdaptFactoryRegistry{
 	
 	/**
 	 * 适配

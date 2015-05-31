@@ -36,6 +36,13 @@ public abstract class AsyncResultHolderRegistry<K, T> {
 		this.holderMap.put(key, holder);
 	}
 	
+	public void addHolder(K key, AsyncResultHolder<T> holder, int timeout){
+		Asserts.argumentNotNull(key, "key");
+		Asserts.argumentNotNull(holder, "holder");
+		
+		this.holderMap.put(key, holder);
+	}
+	
 	/**
 	 * 移除{@link AsyncResultHolder}
 	 * @param key 键值
