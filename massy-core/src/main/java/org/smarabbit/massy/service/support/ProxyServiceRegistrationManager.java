@@ -23,6 +23,7 @@ public class ProxyServiceRegistrationManager<S> extends
 	private Map<ServiceRegistration, S> registrationMap =
 			new HashMap<ServiceRegistration, S>();
 	
+
 	public ProxyServiceRegistrationManager() {
 		super();
 	}

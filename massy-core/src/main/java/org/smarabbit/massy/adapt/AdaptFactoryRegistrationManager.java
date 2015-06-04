@@ -30,6 +30,12 @@ public interface AdaptFactoryRegistrationManager<A> extends
 	void bind(Class<A> adaptType);
 	
 	/**
+	 * 获取绑定的适配类型
+	 * @return
+	 */
+	Class<A> getAdaptType();
+	
+	/**
 	 * 获得适配对象
 	 * @param target 
 	 * 		目标对象，非空

@@ -3,6 +3,7 @@
  */
 package org.smarabbit.massy.adapt;
 
+
 /**
  * 适配工厂,提供获取适配对象的能力
  * 

@@ -3,9 +3,11 @@
  */
 package org.smarabbit.massy.service.support;
 
-import org.smarabbit.massy.service.ServiceListener;
+import java.util.EventListener;
+
 import org.smarabbit.massy.service.ServiceRegistrationManager;
 import org.smarabbit.massy.service.ServiceRegistrationManagerFactory;
+import org.smarabbit.massy.service.ServiceRegistrationManagerFactoryChain;
 
 /**
  * {@link ServiceListenerRegistrationManager}工厂
@@ -13,7 +15,7 @@ import org.smarabbit.massy.service.ServiceRegistrationManagerFactory;
  *
  */
 public class ServiceListenerRegistrationManagerFactory implements
-		ServiceRegistrationManagerFactory<ServiceListener> {
+		ServiceRegistrationManagerFactory {
 
 	/**
 	 * 
@@ -23,28 +25,16 @@ public class ServiceListenerRegistrationManagerFactory implements
 	}
 
 	/* (non-Javadoc)
-	 * @see org.smarabbit.massy.service.ServiceRegistrationManagerFactory#autoInit()
+	 * @see org.smarabbit.massy.service.ServiceRegistrationManagerFactory#create(java.lang.Class, org.smarabbit.massy.service.ServiceRegistrationManagerFactoryChain)
 	 */
 	@Override
-	public boolean autoInit() {
-		return false;
+	public ServiceRegistrationManager<?> create(Class<?> serviceType,
+			ServiceRegistrationManagerFactoryChain chain) {
+		if (serviceType == EventListener.class){
+			return new ServiceListenerRegistrationManager();
+		}else{
+			return chain.proceed(serviceType);
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.smarabbit.massy.service.ServiceRegistrationManagerFactory#getSupportType()
-	 */
-	@Override
-	public Class<ServiceListener> getSupportType() {
-		return ServiceListener.class;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.smarabbit.massy.service.ServiceRegistrationManagerFactory#create()
-	 */
-	@Override
-	public ServiceRegistrationManager<ServiceListener> create() {
-		return new ServiceListenerRegistrationManager();
-	}
-
-	
 }

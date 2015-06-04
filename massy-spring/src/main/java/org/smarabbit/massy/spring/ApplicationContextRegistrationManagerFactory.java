@@ -5,6 +5,7 @@ package org.smarabbit.massy.spring;
 
 import org.smarabbit.massy.service.ServiceRegistrationManager;
 import org.smarabbit.massy.service.ServiceRegistrationManagerFactory;
+import org.smarabbit.massy.service.ServiceRegistrationManagerFactoryChain;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -13,7 +14,7 @@ import org.springframework.context.ApplicationContext;
  *
  */
 public class ApplicationContextRegistrationManagerFactory implements
-		ServiceRegistrationManagerFactory<ApplicationContext> {
+		ServiceRegistrationManagerFactory {
 
 	/**
 	 * 
@@ -22,27 +23,18 @@ public class ApplicationContextRegistrationManagerFactory implements
 	}
 
 	/* (non-Javadoc)
-	 * @see org.smarabbit.massy.service.ServiceRegistrationManagerFactory#autoInit()
+	 * @see org.smarabbit.massy.service.ServiceRegistrationManagerFactory#create(java.lang.Class, org.smarabbit.massy.service.ServiceRegistrationManagerFactoryChain)
 	 */
 	@Override
-	public boolean autoInit() {
-		return false;
+	public ServiceRegistrationManager<?> create(Class<?> serviceType,
+			ServiceRegistrationManagerFactoryChain chain) {
+		if (serviceType == ApplicationContext.class){
+			return new ApplicationContextRegistrationManager();
+		}else{
+			return chain.proceed(serviceType);
+		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.smarabbit.massy.service.ServiceRegistrationManagerFactory#getSupportType()
-	 */
-	@Override
-	public Class<ApplicationContext> getSupportType() {
-		return ApplicationContext.class;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.smarabbit.massy.service.ServiceRegistrationManagerFactory#create()
-	 */
-	@Override
-	public ServiceRegistrationManager<ApplicationContext> create() {
-		return new ApplicationContextRegistrationManager();
-	}
-
+	
+	
 }

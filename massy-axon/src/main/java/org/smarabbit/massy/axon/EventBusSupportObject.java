@@ -33,21 +33,6 @@ public class EventBusSupportObject {
 	}
 	
 	/**
-	 * 异步发送EventMessage
-	 * @param event
-	 */
-	protected <E> void postEvent(final E event){
-		new Thread(new Runnable(){
-
-			@Override
-			public void run() {
-				sendEvent(event);
-			}
-			
-		}).start();;
-	}
-
-	/**
 	 * @return the eventBus
 	 */
 	public EventBus getEventBus() {

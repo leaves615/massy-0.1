@@ -3,12 +3,15 @@
  */
 package org.smarabbit.massy.model;
 
+import org.smarabbit.massy.MassyUtils;
+
 
 /**
+ * 匿名用户
  * @author huangkaihui
  *
  */
-public class AnonymousUser implements CurrentUser {
+public class AnonymousUser implements My {
 
 	/**
 	 * 
@@ -39,6 +42,14 @@ public class AnonymousUser implements CurrentUser {
 	@Override
 	public boolean isAuthenticated() {
 		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.smarabbit.massy.model.My#getActor(java.lang.Class)
+	 */
+	@Override
+	public <A> A asActor(Class<A> actorType) {
+		return MassyUtils.adapt(this, actorType);
 	}
 
 }

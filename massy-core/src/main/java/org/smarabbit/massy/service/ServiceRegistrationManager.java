@@ -58,7 +58,7 @@ public interface ServiceRegistrationManager<S> extends RegistrationManager<Servi
 	 * 管理的服务类型
 	 * @return
 	 */
-	Class<?> getServiceType();
+	Class<S> getServiceType();
 	
 	/**
 	 * 查找服务,返回首个别名符合要求的服务，

@@ -23,17 +23,15 @@ import org.apache.shiro.util.Factory;
 import org.smarabbit.massy.Constants;
 import org.smarabbit.massy.MassyContext;
 import org.smarabbit.massy.MassyException;
-import org.smarabbit.massy.adapt.AdaptFactoryRegistration;
-import org.smarabbit.massy.adapt.AdaptFactoryRegistry;
 import org.smarabbit.massy.annotation.Order;
 import org.smarabbit.massy.launch.MassyContextInitializer;
 import org.smarabbit.massy.launch.MassyContextInitializerChain;
 import org.smarabbit.massy.launch.MassyLaunchException;
-import org.smarabbit.massy.model.CurrentUser;
-import org.smarabbit.massy.support.OrderComparator;
-import org.smarabbit.massy.support.Ordered;
+import org.smarabbit.massy.model.My;
 import org.smarabbit.massy.service.ServiceRegistration;
 import org.smarabbit.massy.service.ServiceRegistry;
+import org.smarabbit.massy.support.OrderComparator;
+import org.smarabbit.massy.support.Ordered;
 import org.smarabbit.massy.util.CollectionUtils;
 
 /**
@@ -69,14 +67,11 @@ public class ShiroContextInitializer implements MassyContextInitializer {
 			}
 		}
 		
-		this.registerCurrentUserAdaptFactory(context);
+		this.registerMyServiceFactory(registry);
 	}
 	
-	protected AdaptFactoryRegistration<?> registerCurrentUserAdaptFactory(MassyContext context){
-		AdaptFactoryRegistry registry =
-				context.getService(AdaptFactoryRegistry.class);
-		
-		return registry.register(CurrentUser.class, new CurrentUserAdaptFactory(), null);
+	protected ServiceRegistration registerMyServiceFactory(ServiceRegistry registry){
+		return registry.register(new Class<?>[]{My.class}, new MyServiceFactory(), null);
 	}
 
 	/**

@@ -3,14 +3,15 @@
  */
 package org.smarabbit.massy.adapt.support;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.smarabbit.massy.adapt.AdaptFactoryRegistrationManager;
 import org.smarabbit.massy.adapt.AdaptFactoryRegistrationManagerFactory;
+import org.smarabbit.massy.adapt.AdaptFactoryRegistrationManagerFactoryChain;
+import org.smarabbit.massy.annotation.AutoInitializeServiceType;
+import org.smarabbit.massy.support.AutoInitializeRegistrationFactory;
 import org.smarabbit.massy.util.ServiceLoaderUtils;
 
 /**
@@ -21,8 +22,8 @@ public class AdaptFactoryRegistrationManagerInitializer {
 
 	protected final ConcurrentHashMap<Class<?>, AdaptFactoryRegistrationManager<?>> managerMap =
 			new ConcurrentHashMap<Class<?>, AdaptFactoryRegistrationManager<?>>();
-	private Map<Class<?>, AdaptFactoryRegistrationManagerFactory<?>> factories =
-			new HashMap<Class<?>, AdaptFactoryRegistrationManagerFactory<?>>();
+	
+	private Chain chain;
 	
 	/**
 	 * 
@@ -39,23 +40,25 @@ public class AdaptFactoryRegistrationManagerInitializer {
 	/**
 	 * 加载所有{@link AdaptFactoryRegistrationManagerFactory},并自动初始化
 	 */
-	@SuppressWarnings("rawtypes")
 	protected void loadFactoriesAndInit(){
 		List<AdaptFactoryRegistrationManagerFactory> factories = 
 				ServiceLoaderUtils.loadServices(AdaptFactoryRegistrationManagerFactory.class);		
-		Iterator<AdaptFactoryRegistrationManagerFactory> it = factories.iterator();
-		while (it.hasNext()){
-			AdaptFactoryRegistrationManagerFactory factory = it.next();
-			
-			Class<?> serviceType = factory.getSupportType();
-			if (factory.autoInit()){
-				//自动初始化
-				AdaptFactoryRegistrationManager mngr = factory.create();
-				this.managerMap.putIfAbsent(serviceType, mngr);
-			}else{
-				this.factories.put(serviceType, factory);
+		
+		int size = factories.size();
+		for (int i=size-1; i>-1; i--){
+			AdaptFactoryRegistrationManagerFactory factory = factories.get(i);
+			if (factory instanceof AutoInitializeRegistrationFactory){
+				Class<?> adaptType = ((AutoInitializeRegistrationFactory)factory).getSupportType();
+				
+				Chain chain = new Chain(factory);
+				AdaptFactoryRegistrationManager<?> mngr = chain.proceed(adaptType);
+				this.managerMap.put(adaptType, mngr);
+				
+				factories.remove(factory);
 			}
 		}
+		
+		this.chain = new Chain(factories.iterator());
 	}
 	
 	/**
@@ -66,7 +69,15 @@ public class AdaptFactoryRegistrationManagerInitializer {
 	@SuppressWarnings("unchecked")
 	protected <A> AdaptFactoryRegistrationManager<A> getRegistrationManager(
 			Class<A> adaptType){
-		return (AdaptFactoryRegistrationManager<A>)this.managerMap.get(adaptType);
+		 
+		AdaptFactoryRegistrationManager<A> result =(AdaptFactoryRegistrationManager<A>) this.managerMap.get(adaptType);
+		if (result == null){
+			if (this.isAutoInitializeServiceType(adaptType)){
+				result = this.createRegistrationManager(adaptType);
+			}
+		}
+		
+		return result;
 	}
 
 	/**
@@ -80,16 +91,15 @@ public class AdaptFactoryRegistrationManagerInitializer {
 	protected <A> AdaptFactoryRegistrationManager<A> createRegistrationManager(Class<A> adaptType){
 		AdaptFactoryRegistrationManager<A> result = null;
 		AdaptFactoryRegistrationManager<A> tmp = null;
-		AdaptFactoryRegistrationManagerFactory<A> factory = 
-				(AdaptFactoryRegistrationManagerFactory<A>)this.factories.remove(adaptType);
-		if (factory != null){
-			tmp = factory.create();
-		}else{
-			//创建缺省的服务注册管理器
+		
+		tmp = this.chain.proceed(adaptType);
+		if (tmp == null){
 			tmp = new DefaultAdaptFactoryRegistrationManager<A>();
 		}
+		if (tmp.getAdaptType() == null){
+			tmp.bind(adaptType);
+		}
 		
-		tmp.bind(adaptType);
 		result = (AdaptFactoryRegistrationManager<A>) this.managerMap.putIfAbsent(adaptType, tmp);
 		if (result == null){
 			result = tmp;
@@ -97,5 +107,42 @@ public class AdaptFactoryRegistrationManagerInitializer {
 		
 		return result;
 	}
+	
+	private boolean isAutoInitializeServiceType(Class<?> serviceType){
+		return serviceType.isAnnotationPresent(AutoInitializeServiceType.class);
+	}
 
+	private class Chain implements AdaptFactoryRegistrationManagerFactoryChain {
+		
+		private AdaptFactoryRegistrationManagerFactory current;
+		private Chain next;
+		
+		public Chain(AdaptFactoryRegistrationManagerFactory factory){
+			this.current = factory;
+			this.next = null;
+		}
+
+		public Chain(Iterator<AdaptFactoryRegistrationManagerFactory> it) {
+			if (it.hasNext()){
+				this.current = it.next();
+				this.next = new Chain(it);
+			}else{
+				this.current = null;
+				this.next = null;
+			}
+		}
+
+		/* (non-Javadoc)
+		 * @see org.smarabbit.massy.service.ServiceRegistrationManagerFactoryChain#proceed(java.lang.Class)
+		 */
+		@SuppressWarnings("unchecked")
+		@Override
+		public <A> AdaptFactoryRegistrationManager<A> proceed(Class<A> adaptType) {
+			AdaptFactoryRegistrationManager<?> result = null;
+			if (this.current != null){
+				result = this.current.create(adaptType, next);
+			}
+			return (AdaptFactoryRegistrationManager<A>)result;
+		}
+	}
 }

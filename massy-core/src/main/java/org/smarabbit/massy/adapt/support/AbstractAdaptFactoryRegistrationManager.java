@@ -34,6 +34,11 @@ public abstract class AbstractAdaptFactoryRegistrationManager<A> extends
 		this.adaptType = adaptType;
 	}
 	
+	@Override
+	public Class<A> getAdaptType(){
+		return this.adaptType;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.smarabbit.massy.adapt.AdaptFactoryRegistrationManager#getAdaptor(java.lang.Object)
 	 */
@@ -71,9 +76,7 @@ public abstract class AbstractAdaptFactoryRegistrationManager<A> extends
 		return registration.getAdaptFactory().getAdaptor(target);
 	}
 
-	protected Class<A> getAdaptType(){
-		return this.adaptType;
-	}
+	
 	
 	/**
 	 * 获取适配对象

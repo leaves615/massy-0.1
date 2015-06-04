@@ -3,14 +3,16 @@
  */
 package org.smarabbit.massy.service.support;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.smarabbit.massy.annotation.AutoInitializeServiceType;
 import org.smarabbit.massy.service.ServiceRegistrationManager;
 import org.smarabbit.massy.service.ServiceRegistrationManagerFactory;
+import org.smarabbit.massy.service.ServiceRegistrationManagerFactoryChain;
+import org.smarabbit.massy.support.AutoInitializeRegistrationFactory;
+import org.smarabbit.massy.support.ObjectOrderUtils;
 import org.smarabbit.massy.util.ServiceLoaderUtils;
 
 /**
@@ -21,8 +23,8 @@ public abstract class ServiceRegistrationManagerInitializer {
 
 	protected final ConcurrentHashMap<Class<?>, ServiceRegistrationManager<?>> managerMap =
 			new ConcurrentHashMap<Class<?>, ServiceRegistrationManager<?>>();
-	private Map<Class<?>, ServiceRegistrationManagerFactory<?>> factories =
-			new HashMap<Class<?>, ServiceRegistrationManagerFactory<?>>();
+	
+	private ServiceRegistrationManagerFactoryChain chain;
 	
 	/**
 	 * 
@@ -39,23 +41,30 @@ public abstract class ServiceRegistrationManagerInitializer {
 	/**
 	 * 加载所有{@link ServiceRegistrationManagerFactory},并自动初始化
 	 */
-	@SuppressWarnings("rawtypes")
 	protected void loadFactoriesAndInit(){
 		List<ServiceRegistrationManagerFactory> factories = 
-				ServiceLoaderUtils.loadServices(ServiceRegistrationManagerFactory.class);		
-		Iterator<ServiceRegistrationManagerFactory> it = factories.iterator();
-		while (it.hasNext()){
-			ServiceRegistrationManagerFactory factory = it.next();
+				ServiceLoaderUtils.loadServices(ServiceRegistrationManagerFactory.class);	
+		
+		//检查支持AutoInitializable的工厂，并创建对应的ServiceRegistrationManagerFactory.
+		int size = factories.size();
+		for (int i=size-1; i>-1; i--){
+			ServiceRegistrationManagerFactory factory = factories.get(i);
 			
-			Class<?> serviceType = factory.getSupportType();
-			if (factory.autoInit()){
-				//自动初始化
-				ServiceRegistrationManager mngr = factory.create();
-				this.managerMap.putIfAbsent(serviceType, mngr);
-			}else{
-				this.factories.put(serviceType, factory);
+			if (factory instanceof AutoInitializeRegistrationFactory){
+				Class<?> serviceType = ((AutoInitializeRegistrationFactory)factory).getSupportType();
+				Chain chain = new Chain(factory);
+				ServiceRegistrationManager<?> mngr =chain.proceed(serviceType);
+				this.managerMap.put(serviceType, mngr);
+				
+				factories.remove(factory);
 			}
 		}
+				
+		ObjectOrderUtils.sort(factories);
+		factories.add(0, new ProxyAnnotatedServiceRegistrationManagerFactory());
+		
+		Iterator<ServiceRegistrationManagerFactory> it = factories.iterator();
+		this.chain = new Chain(it);
 	}
 	
 	/**
@@ -66,7 +75,15 @@ public abstract class ServiceRegistrationManagerInitializer {
 	@SuppressWarnings("unchecked")
 	protected <S> ServiceRegistrationManager<S> getRegistrationManager(
 			Class<S> serviceType){
-		return (ServiceRegistrationManager<S>)this.managerMap.get(serviceType);
+		ServiceRegistrationManager<S> result = (ServiceRegistrationManager<S>)this.managerMap.get(serviceType);
+		if (result == null){
+			//自动实例化的服务注册管理器
+			if (this.isAutoInitializeServiceType(serviceType)){
+				result = this.createRegistrationManager(serviceType);
+			}
+		}
+		
+		return result;
 	}
 
 	/**
@@ -78,17 +95,15 @@ public abstract class ServiceRegistrationManagerInitializer {
 	 */
 	@SuppressWarnings("unchecked")
 	protected <S> ServiceRegistrationManager<S> createRegistrationManager(Class<S> serviceType){
+				
 		ServiceRegistrationManager<S> result = null;
-		ServiceRegistrationManager<S> tmp = null;
-		ServiceRegistrationManagerFactory<S> factory = 
-				(ServiceRegistrationManagerFactory<S>)this.factories.remove(serviceType);
-		if (factory != null){
-			tmp = factory.create();
-		}else{
-			//创建缺省的服务注册管理器
+		ServiceRegistrationManager<S> tmp =  this.chain.proceed(serviceType);
+		if (tmp == null){
 			tmp = new DefaultServiceRegistrationManager<S>();
 		}
-		tmp.bind(serviceType);
+		if (tmp.getServiceType() == null){
+			tmp.bind(serviceType);
+		}
 		
 		result = (ServiceRegistrationManager<S>) this.managerMap.putIfAbsent(serviceType, tmp);
 		if (result == null){
@@ -97,5 +112,42 @@ public abstract class ServiceRegistrationManagerInitializer {
 		
 		return result;
 	}
+	
+	private boolean isAutoInitializeServiceType(Class<?> serviceType){
+		return serviceType.isAnnotationPresent(AutoInitializeServiceType.class);
+	}
 
+	private class Chain implements ServiceRegistrationManagerFactoryChain {
+		
+		private ServiceRegistrationManagerFactory current;
+		private Chain next;
+		
+		public Chain(ServiceRegistrationManagerFactory factory){
+			this.current = factory;
+			this.next = null;
+		}
+
+		public Chain(Iterator<ServiceRegistrationManagerFactory> it) {
+			if (it.hasNext()){
+				this.current = it.next();
+				this.next = new Chain(it);
+			}else{
+				this.current = null;
+				this.next = null;
+			}
+		}
+
+		/* (non-Javadoc)
+		 * @see org.smarabbit.massy.service.ServiceRegistrationManagerFactoryChain#proceed(java.lang.Class)
+		 */
+		@SuppressWarnings("unchecked")
+		@Override
+		public <S> ServiceRegistrationManager<S> proceed(Class<S> serviceType) {
+			ServiceRegistrationManager<?> result = null;
+			if (this.current != null){
+				result = this.current.create(serviceType, next);
+			}
+			return (ServiceRegistrationManager<S>)result;
+		}
+	}
 }

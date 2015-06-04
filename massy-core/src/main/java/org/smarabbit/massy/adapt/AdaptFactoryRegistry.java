@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.smarabbit.massy.Descriptor;
 import org.smarabbit.massy.Registration;
+import org.smarabbit.massy.annotation.AutoInitializeServiceType;
 import org.smarabbit.massy.spec.Specification;
 
 /**
@@ -18,6 +19,7 @@ import org.smarabbit.massy.spec.Specification;
  * @author huangkh
  *
  */
+@AutoInitializeServiceType
 public interface AdaptFactoryRegistry{
 	
 	/**

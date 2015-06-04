@@ -6,6 +6,7 @@ package org.smarabbit.massy.adapt.support;
 import org.smarabbit.massy.adapt.AdaptFactoryRegistry;
 import org.smarabbit.massy.service.ServiceRegistrationManager;
 import org.smarabbit.massy.service.ServiceRegistrationManagerFactory;
+import org.smarabbit.massy.service.ServiceRegistrationManagerFactoryChain;
 
 /**
  * {@link AdaptFactoryRegistry}服务工厂，提供{@link AdaptFactoryRegistry}对应的服务注册管理器实例
@@ -15,7 +16,7 @@ import org.smarabbit.massy.service.ServiceRegistrationManagerFactory;
  *
  */
 public class DefaultAdaptFactoryRegistrationManagerFactory implements
-		ServiceRegistrationManagerFactory<AdaptFactoryRegistry> {
+		ServiceRegistrationManagerFactory {
 
 	/**
 	 * 
@@ -24,21 +25,17 @@ public class DefaultAdaptFactoryRegistrationManagerFactory implements
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see org.smarabbit.massy.service.ServiceRegistrationManagerFactory#create(java.lang.Class, org.smarabbit.massy.service.ServiceRegistrationManagerFactoryChain)
+	 */
 	@Override
-	public boolean autoInit() {
-		//随massy framework启动时创建
-		return true;
+	public ServiceRegistrationManager<?> create(Class<?> serviceType,
+			ServiceRegistrationManagerFactoryChain chain) {
+		if (serviceType == AdaptFactoryRegistry.class){
+			return new DefaultAdaptFactoryRepositoryRegistrationManager();
+		}else{
+			return chain.proceed(serviceType);
+		}
 	}
 
-	@Override
-	public Class<AdaptFactoryRegistry> getSupportType() {
-		return AdaptFactoryRegistry.class;
-	}
-
-	@Override
-	public ServiceRegistrationManager<AdaptFactoryRegistry> create() {
-		return new DefaultAdaptFactoryRepositoryRegistrationManager();
-	}
-
-	
 }

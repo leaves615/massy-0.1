@@ -13,6 +13,7 @@ import org.smarabbit.massy.spring.MassyApplicationContext;
 import org.smarabbit.massy.spring.MassyResource;
 import org.smarabbit.massy.util.Asserts;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
@@ -72,13 +73,19 @@ public class AnnotationDrivenBeanProcessor
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
-		//标记Bean已经在BeanProcessor相关方法中处理
-		this.beanNameMap.put(beanName, ProcessingPoint.BEANPROCESSOR);
+		
 		
 		Class<?> beanType = bean.getClass();
-		DefaultBeanDefinitionManager definitionManager = 
-				DefaultBeanDefinitionManagerUtils.getBeanDefinitionManager(this.beanFactory);
-		this.doRegister(beanName, beanType, beanFactory, definitionManager);
+		
+		//避免发生循环引用问题，所以FactoryBean在最后处理
+		if (!FactoryBean.class.isAssignableFrom(beanType)){
+			//标记Bean已经在BeanProcessor相关方法中处理
+			this.beanNameMap.put(beanName, ProcessingPoint.BEANPROCESSOR);
+			DefaultBeanDefinitionManager definitionManager = 
+					DefaultBeanDefinitionManagerUtils.getBeanDefinitionManager(this.beanFactory);
+			this.doRegister(beanName, beanType, beanFactory, definitionManager);
+		}
+		
 		return bean;
 	}
 	
@@ -153,6 +160,10 @@ public class AnnotationDrivenBeanProcessor
 	protected void doRegister(String beanName, Class<?> beanType, ConfigurableListableBeanFactory beanFactory, 
 			DefaultBeanDefinitionManager definitionManager){		
 		//按Definition执行注册
+		if (FactoryBean.class.isAssignableFrom(beanType)){
+			FactoryBean<?> factoryBean = (FactoryBean<?>)beanFactory.getBean("&" + beanName);
+			beanType = factoryBean.getObjectType();
+		}
 		Definition[] definitions = definitionManager.getDefinitions(beanName, beanType);
 		if (definitions.length != 0){
 			for (Definition definition: definitions){

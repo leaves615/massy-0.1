@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.smarabbit.massy.model;
+package org.smarabbit.massy.model.persistent;
 
 import javax.sql.DataSource;
 
