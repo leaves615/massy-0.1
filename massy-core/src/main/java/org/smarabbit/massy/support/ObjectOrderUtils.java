@@ -6,6 +6,8 @@ package org.smarabbit.massy.support;
 import java.util.Collections;
 import java.util.List;
 
+import org.smarabbit.massy.annotation.Ordered;
+
 
 /**
  * 对象排序工具类，提供{@link Ordered}和{@link Order}的对象进行排序

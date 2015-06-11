@@ -8,10 +8,10 @@ import java.util.Map;
 
 import org.smarabbit.massy.MassyContext;
 import org.smarabbit.massy.annotation.Order;
+import org.smarabbit.massy.annotation.Ordered;
 import org.smarabbit.massy.launch.MassyContextInitializer;
 import org.smarabbit.massy.launch.MassyContextInitializerChain;
 import org.smarabbit.massy.launch.MassyLaunchException;
-import org.smarabbit.massy.support.Ordered;
 import org.smarabbit.massy.util.LogUtils;
 
 /**

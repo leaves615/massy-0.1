@@ -3,6 +3,8 @@
  */
 package org.smarabbit.massy.model.factory;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.smarabbit.massy.model.provider.DataProvider;
 import org.smarabbit.massy.util.Asserts;
 
@@ -13,6 +15,8 @@ import org.smarabbit.massy.util.Asserts;
 public class TypeNamedEntityFactory extends AbstractEntityFactory implements
 		EntityFactory {
 
+	private static ConcurrentHashMap<String, Class<?>> classNameMap =
+			new ConcurrentHashMap<String, Class<?>>();
 	/**
 	 * 
 	 */
@@ -38,6 +42,11 @@ public class TypeNamedEntityFactory extends AbstractEntityFactory implements
 
 	protected Class<?> getEntityType(DataProvider mapValue) throws ClassNotFoundException{
 		String typeName = (String)mapValue.getValue(DEFAULT_TYPENAME);
-		return Class.forName(typeName);
+		Class<?> result = classNameMap.get(typeName);
+		if (result == null){
+			result = Thread.currentThread().getContextClassLoader().loadClass(typeName);
+			classNameMap.putIfAbsent(typeName, result);
+		}
+		return result;
 	}
 }

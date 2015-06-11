@@ -18,10 +18,11 @@ public interface My extends Actable{
 	boolean isAuthenticated();
 		
 	/**
-	 * 获取演员角色
-	 * @param actorType 演员类型
-	 * @return 
-	 * 			{@link A},可能返回null.
+	 * 转换为可扮演的角色
+	 * @param actorType 角色类型
+	 * @return
+	 * 		{@link A},可能返回null.
 	 */
-	<A> A asActor(Class<A> actorType);
+	<A extends Actable> A runAs(Class<A> actorType);
+	
 }

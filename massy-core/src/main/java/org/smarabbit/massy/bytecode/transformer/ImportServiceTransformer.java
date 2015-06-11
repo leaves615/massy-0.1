@@ -27,7 +27,6 @@ public class ImportServiceTransformer extends FieldTransformer {
 
 	private static final Logger logger =
 			LoggerFactory.getLogger(ImportServiceTransformer.class);
-	private FieldEditor editor = new FieldEditor();
 	
 	/**
 	 * 
@@ -56,9 +55,8 @@ public class ImportServiceTransformer extends FieldTransformer {
 								anno.allowNull());
 				AnnotatedDefinitionManagerFactory.getDefault().addDefinition(className, definition);
 				
-				this.editor.setAnno(anno);
-				this.editor.setField(target);
-				target.getDeclaringClass().instrument(this.editor);
+				FieldEditor editor = new FieldEditor(target, anno);
+				target.getDeclaringClass().instrument(editor);
 			}
 		} catch (Exception e) {
 			throw new IllegalClassFormatException(e.getMessage());
@@ -76,8 +74,9 @@ public class ImportServiceTransformer extends FieldTransformer {
 		private CtField field;
 		private ImportService anno;
 		
-		public FieldEditor() {
-			
+		public FieldEditor(CtField field, ImportService anno) {
+			this.field = field;
+			this.anno = anno;
 		}
 		
 		/* (non-Javadoc)
@@ -128,24 +127,6 @@ public class ImportServiceTransformer extends FieldTransformer {
 			}
 
 			
-			
-		}
-
-		public CtField getField() {
-			return field;
-		}
-
-		public void setField(CtField field) {
-			this.field = field;
-		}
-
-		public ImportService getAnno() {
-			return anno;
-		}
-
-		public void setAnno(ImportService anno) {
-			this.anno = anno;
-		}
-		
+		}		
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.smarabbit.massy.support;
+package org.smarabbit.massy.annotation;
 
 /**
  * @author huangkh

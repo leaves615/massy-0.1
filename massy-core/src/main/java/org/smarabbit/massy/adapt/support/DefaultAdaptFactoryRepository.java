@@ -3,6 +3,9 @@
  */
 package org.smarabbit.massy.adapt.support;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.smarabbit.massy.Descriptor;
@@ -77,6 +80,26 @@ public class DefaultAdaptFactoryRepository extends
 
 		AdaptFactoryRegistrationManager<?> manager = this.getRegistrationManager(adaptType);
 		return manager == null ? new Descriptor[0] : manager.getDescriptors();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.smarabbit.massy.adapt.AdaptFactoryRegistry#getSupports(java.lang.Class)
+	 */
+	@Override
+	public Class<?>[] getAdaptTypesFromObject(Object object) {
+		Asserts.argumentNotNull(object, "object");
+		
+		Class<?> clazz = object.getClass();
+		
+		List<Class<?>> c = new ArrayList<Class<?>>();
+		Collection<AdaptFactoryRegistrationManager<?>> registrationManagers =
+				this.managerMap.values();
+		for (AdaptFactoryRegistrationManager<?> registrationManager : registrationManagers){
+			if (registrationManager.supports(clazz)){
+				c.add(registrationManager.getAdaptType());
+			}
+		}
+		return c.toArray(new Class<?>[c.size()]);
 	}
 
 	/* (non-Javadoc)

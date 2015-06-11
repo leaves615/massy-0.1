@@ -45,10 +45,10 @@ public class AnonymousUser implements My {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.smarabbit.massy.model.My#getActor(java.lang.Class)
+	 * @see org.smarabbit.massy.model.My#runAs(java.lang.Class)
 	 */
 	@Override
-	public <A> A asActor(Class<A> actorType) {
+	public <A extends Actable> A runAs(Class<A> actorType) {
 		return MassyUtils.adapt(this, actorType);
 	}
 

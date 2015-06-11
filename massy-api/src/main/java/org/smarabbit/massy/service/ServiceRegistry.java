@@ -6,6 +6,8 @@ package org.smarabbit.massy.service;
 import java.util.Map;
 
 import org.smarabbit.massy.Descriptor;
+import org.smarabbit.massy.MassyException;
+import org.smarabbit.massy.RegistrationManager;
 import org.smarabbit.massy.spec.Specification;
 
 /**

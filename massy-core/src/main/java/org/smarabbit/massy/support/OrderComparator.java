@@ -6,6 +6,7 @@ package org.smarabbit.massy.support;
 import java.util.Comparator;
 
 import org.smarabbit.massy.annotation.Order;
+import org.smarabbit.massy.annotation.Ordered;
 
 /**
  * 排序比较器,提供对{@link Ordered}实例，或者注解{@link Order}实例进行排序比较。

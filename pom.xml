@@ -79,5 +79,6 @@
 		<module>massy-axon</module>
 		<module>massy-model</module>
     <module>massy-shiro</module>
+    <module>massy-api</module>
   </modules>
 </project>

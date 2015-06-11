@@ -12,6 +12,7 @@ import org.smarabbit.massy.Constants;
 import org.smarabbit.massy.MassyContext;
 import org.smarabbit.massy.instrumentation.InstrumentationAgentInitializer;
 import org.smarabbit.massy.support.ObjectOrderUtils;
+import org.smarabbit.massy.util.Asserts;
 import org.smarabbit.massy.util.LogUtils;
 import org.smarabbit.massy.util.ServiceLoaderUtils;
 
@@ -21,11 +22,17 @@ import org.smarabbit.massy.util.ServiceLoaderUtils;
  */
 public class MassyContextInitializerProcessor {
 
+	private final ClassLoader loader;
 	/**
 	 * 
 	 */
 	public MassyContextInitializerProcessor() {
+		this(Thread.currentThread().getContextClassLoader());
+	}
 	
+	public MassyContextInitializerProcessor(ClassLoader classLoader){
+		Asserts.argumentNotNull(classLoader, "classLoader");
+		this.loader = classLoader;
 	}
 	
 	/**
@@ -82,7 +89,7 @@ public class MassyContextInitializerProcessor {
 	 */
 	protected List<MassyContextInitializer> loadAndSortInitializer(){
 		List<MassyContextInitializer> result =
-				ServiceLoaderUtils.loadServices(MassyContextInitializer.class);
+				ServiceLoaderUtils.loadServices(MassyContextInitializer.class, this.loader);
 		ObjectOrderUtils.sort(result);
 		return result;
 	}

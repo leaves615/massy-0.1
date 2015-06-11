@@ -36,6 +36,14 @@ public interface AdaptFactoryRegistrationManager<A> extends
 	Class<A> getAdaptType();
 	
 	/**
+	 * 是否支持类型的适配
+	 * @param type 类型
+	 * @return
+	 * 		true表示支持该类型适配，false表示不支持
+	 */
+	boolean supports(Class<?> type);
+	
+	/**
 	 * 获得适配对象
 	 * @param target 
 	 * 		目标对象，非空

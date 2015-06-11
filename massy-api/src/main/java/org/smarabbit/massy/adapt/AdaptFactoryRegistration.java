@@ -21,7 +21,7 @@ public interface AdaptFactoryRegistration<A> extends Registration {
 	 * 		{@link Class},不能返回null.
 	 */
 	Class<A> getAdaptType();
-		
+			
 	/**
 	 * 获取注册的{@link AdaptFactory}
 	 * @return

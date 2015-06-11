@@ -11,12 +11,6 @@ package org.smarabbit.massy.model.persistent;
  *
  */
 public interface PersistenceSchemaHandler {
-
-	/**
-	 * 是否支持
-	 * @return
-	 */
-	boolean supports();
 	
 	/**
 	 * 构建存储模式 

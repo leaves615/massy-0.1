@@ -109,7 +109,8 @@ public class SimpleNamedMapper implements NamedMapper {
 	 */
 	@Override
 	public String getMappingName(String name) {
-		return this.namedMap.get(name);
+		return this.namedMap.containsKey(name) ? 
+				this.namedMap.get(name) : name;
 	}
 	
 	/**

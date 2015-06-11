@@ -20,4 +20,12 @@ public abstract class MyFactory {
 		return MassyUtils.getDefaultContext().getService(My.class);
 	}
 	
+	/**
+	 * 转换可扮演角色
+	 * @param actorType
+	 * @return
+	 */
+	public static <A extends Actable> A runAs(Class<A> actorType){
+		return getCurrent().runAs(actorType);
+	}
 }

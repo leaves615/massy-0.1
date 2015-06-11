@@ -4,25 +4,19 @@
 package org.smarabbit.massy.annotation;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.smarabbit.massy.support.Ordered;
-
 /**
- * 排序注解
- * 
- * @author huangkh
+ * 代理服务类型注解，获取实现该服务类型的Massy服务，将返回一个代理对象。
+ * @author huangkaihui
  *
  */
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
-public @interface Order {
+@Inherited
+public @interface ProxyServiceType {
 
-	/**
-	 * 排序值
-	 * @return
-	 */
-	int value() default Ordered.DEFAULT_PRECEDENCE ;
 }

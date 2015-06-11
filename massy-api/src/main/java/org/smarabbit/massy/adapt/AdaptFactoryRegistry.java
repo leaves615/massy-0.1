@@ -73,6 +73,14 @@ public interface AdaptFactoryRegistry{
 	 * 		{@link Descriptor}数组，无对应的{@link AdaptFactory}返回empty数组
 	 */
 	Descriptor[] getAdaptFactoryDescriptors(Class<?> adaptType);
+	
+	/**
+	 * 获取对象所支持的适配类型 
+	 * @param type 类型
+	 * @return
+	 * 		{@link Class<?>}数组，适配类型
+	 */
+	Class<?>[] getAdaptTypesFromObject(Object object);
 		
 	/**
 	 * 注册适配类型和适配工厂，允许多个适配工厂注册同样的适配类型。

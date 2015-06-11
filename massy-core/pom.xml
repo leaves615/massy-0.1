@@ -24,6 +24,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.smarabbit.massy</groupId>
+			<artifactId>massy-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.smarabbit.massy</groupId>
 			<artifactId>massy-instrumentation</artifactId>
 			<version>${project.version}</version>
 		</dependency>

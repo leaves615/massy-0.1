@@ -8,11 +8,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.smarabbit.massy.util.Asserts;
 
 /**
- * 抽象的异步结果句柄注册器，提供{@link AsyncResultHolder}注册方法
+ * 抽象的异步结果句柄上下文，提供{@link AsyncResultHolder}添加和移除方法
  * @author huangkaihui
  *
  */
-public abstract class AsyncResultHolderRegistry<K, T> {
+public abstract class AsyncResultHolderContext<K, T> {
 
 	private ConcurrentHashMap<K, AsyncResultHolder<T>> holderMap =
 			new ConcurrentHashMap<K, AsyncResultHolder<T>>();
@@ -20,7 +20,7 @@ public abstract class AsyncResultHolderRegistry<K, T> {
 	/**
 	 * 
 	 */
-	public AsyncResultHolderRegistry() {
+	public AsyncResultHolderContext() {
 		
 	}
 

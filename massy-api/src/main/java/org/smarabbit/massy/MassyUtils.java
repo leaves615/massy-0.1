@@ -5,7 +5,6 @@ package org.smarabbit.massy;
 
 import org.smarabbit.massy.adapt.AdaptFactoryRegistry;
 import org.smarabbit.massy.adapt.AdaptNotSupportException;
-import org.smarabbit.massy.launch.DefaultMassyLauncher;
 import org.smarabbit.massy.launch.MassyLaunchException;
 import org.smarabbit.massy.launch.MassyLauncher;
 import org.smarabbit.massy.service.ServiceRegistry;
@@ -182,7 +181,7 @@ public abstract class MassyUtils {
 	public static MassyLauncher create(){
 		MassyLauncher result = ServiceLoaderUtils.loadFirstService(MassyLauncher.class);
 		if (result == null){
-			result = new DefaultMassyLauncher();
+			throw new MassyLaunchException("cannot fond service: " + MassyLauncher.class.getName() + ".");
 		}
 		return result;
 	}
