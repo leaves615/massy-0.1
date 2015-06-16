@@ -20,7 +20,7 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smarabbit.massy.MassyUtils;
-import org.smarabbit.massy.support.OrderComparator;
+import org.smarabbit.massy.service.OrderComparator;
 import org.smarabbit.massy.util.CollectionUtils;
 import org.springframework.beans.factory.InitializingBean;
 

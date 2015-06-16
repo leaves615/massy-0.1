@@ -14,7 +14,7 @@ import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.SimpleCommandBus;
 import org.axonframework.unitofwork.TransactionManager;
-import org.smarabbit.massy.support.OrderComparator;
+import org.smarabbit.massy.service.OrderComparator;
 import org.smarabbit.massy.util.CollectionUtils;
 import org.springframework.context.ApplicationContextAware;
 

@@ -152,7 +152,7 @@ public interface EventSourcingMySqlDDL {
 					"`cause` blob, " +
 					"`time` datetime NOT NULL, " +
 					"PRIMARY KEY (`id`), " +
-					"KEY `userIdIndex` (`userId`), " +
+					"KEY `userIndex` (`userId`), " +
 					"KEY `cmdTypeIndex` (`commandType`), " +
 					"KEy `timeIndex` (`time`) " +
 					") ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci; "; 

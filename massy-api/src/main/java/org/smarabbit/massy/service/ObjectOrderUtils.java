@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.smarabbit.massy.support;
+package org.smarabbit.massy.service;
 
 import java.util.Collections;
 import java.util.List;

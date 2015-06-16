@@ -70,5 +70,10 @@ public interface Constants {
 	 * 前置初始化器，在ServiceLoader加载的初始化器前执行初始化,List<MassyContextInitializer>对象.
 	 */
 	static final String PREPEND_INITIALIZERS = "prepend.initializers";
+	
+	/**
+	 * 前置插件，在ServiceLoader加载其他插件前加载.
+	 */
+	static final String PREPEND_PLUGINS = "prepend.plugins";
 
 }

@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.smarabbit.massy.support.ObjectOrderUtils;
+import org.smarabbit.massy.service.ObjectOrderUtils;
 import org.smarabbit.massy.util.ServiceLoaderUtils;
 
 /**

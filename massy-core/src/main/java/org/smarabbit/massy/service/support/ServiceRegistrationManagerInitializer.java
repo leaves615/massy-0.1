@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.smarabbit.massy.annotation.AutoInitializeServiceType;
+import org.smarabbit.massy.service.ObjectOrderUtils;
 import org.smarabbit.massy.service.ServiceRegistrationManager;
 import org.smarabbit.massy.service.ServiceRegistrationManagerFactory;
 import org.smarabbit.massy.service.ServiceRegistrationManagerFactoryChain;
 import org.smarabbit.massy.support.AutoInitializeRegistrationFactory;
-import org.smarabbit.massy.support.ObjectOrderUtils;
 import org.smarabbit.massy.util.ServiceLoaderUtils;
 
 /**

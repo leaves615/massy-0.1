@@ -11,6 +11,7 @@ import java.util.concurrent.CountDownLatch;
 
 import org.smarabbit.massy.Constants;
 import org.smarabbit.massy.MassyUtils;
+import org.smarabbit.massy.launch.AbstractPlugInActivator;
 import org.smarabbit.massy.service.ServiceRegistry;
 import org.smarabbit.massy.spring.context.MassyXmlApplicationContext;
 import org.smarabbit.massy.util.Asserts;
@@ -28,17 +29,20 @@ public class MultithreadingBatchLoader {
 	private Collection<MassyResource> resources;
 	
 	private ServiceRegistry serviceRegistry;
+	private AbstractPlugInActivator plugInActivator;
 	
 	private Exception exception;
 	/**
 	 * 
 	 */
-	public MultithreadingBatchLoader(Collection<ApplicationContext> applicationContexts) {
+	public MultithreadingBatchLoader(Collection<ApplicationContext> applicationContexts,
+			AbstractPlugInActivator plugInActivator) {
 		Asserts.argumentNotNull(applicationContexts, "applicationContexts");
+		Asserts.argumentNotNull(plugInActivator, "plugInActivator");
 		
-		this.serviceRegistry = MassyUtils.getDefaultContext().getService(ServiceRegistry.class);
 		this.applicationContexts = applicationContexts;
-		
+		this.plugInActivator = plugInActivator;
+		this.serviceRegistry = MassyUtils.getDefaultContext().getService(ServiceRegistry.class);
 	}
 
 	/**
@@ -103,8 +107,8 @@ public class MultithreadingBatchLoader {
 				props.put(Constants.SERVICE_CONTAINER, CONTAINER);
 				props.put(Constants.SERVICE_CONFIGFILE, MassyResource.getConfigurationFile(resource));
 	
-				MultithreadingBatchLoader.this.serviceRegistry.register(
-						ApplicationContext.class, applicationContext, props);
+				plugInActivator.add(serviceRegistry.register(
+						ApplicationContext.class, applicationContext, props));
 				applicationContexts.add(applicationContext);
 			} catch (Exception e) {
 				if (exception == null)

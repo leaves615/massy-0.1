@@ -6,10 +6,8 @@ package org.smarabbit.massy;
 import org.smarabbit.massy.adapt.AdaptFactoryRegistry;
 import org.smarabbit.massy.adapt.AdaptNotSupportException;
 import org.smarabbit.massy.launch.MassyLaunchException;
-import org.smarabbit.massy.launch.MassyLauncher;
 import org.smarabbit.massy.service.ServiceRegistry;
 import org.smarabbit.massy.util.Asserts;
-import org.smarabbit.massy.util.ServiceLoaderUtils;
 
 /**
  * Massy工具，提供服务查询、适配和属性获取的方法
@@ -18,7 +16,7 @@ import org.smarabbit.massy.util.ServiceLoaderUtils;
  */
 public abstract class MassyUtils {
 
-	private static MassyContext INSTANCE;
+	protected static MassyContext INSTANCE;
 	private static AdaptFactoryRegistry adaptRegistry;
 	private static ServiceRegistry serviceRegistry;
 	
@@ -36,14 +34,15 @@ public abstract class MassyUtils {
 	 * 设置{@link MassyContext}
 	 * @param context {@link MassyContext}
 	 */
-	public static void setDefaultContext(MassyContext context){
-		if (INSTANCE == null){
-			INSTANCE = context;
-			
-			if (INSTANCE != null){
-				adaptRegistry = INSTANCE.getService(AdaptFactoryRegistry.class);
-				serviceRegistry = INSTANCE.getService(ServiceRegistry.class);
-			}
+	protected static void setDefaultContext(MassyContext context){
+		INSTANCE = context;
+		
+		if (INSTANCE != null){
+			adaptRegistry = INSTANCE.getService(AdaptFactoryRegistry.class);
+			serviceRegistry = INSTANCE.getService(ServiceRegistry.class);
+		}else{
+			adaptRegistry = null;
+			serviceRegistry = null;
 		}
 	}
 	
@@ -170,19 +169,6 @@ public abstract class MassyUtils {
 			throw new PropertyNotFoundException(name);
 		}
 		
-		return result;
-	}
-	
-	/**
-	 * 创建{@link MassyLauncher}
-	 * @return
-	 * 		{@link MassyLauncher},不能返回null.
-	 */
-	public static MassyLauncher create(){
-		MassyLauncher result = ServiceLoaderUtils.loadFirstService(MassyLauncher.class);
-		if (result == null){
-			throw new MassyLaunchException("cannot fond service: " + MassyLauncher.class.getName() + ".");
-		}
 		return result;
 	}
 	

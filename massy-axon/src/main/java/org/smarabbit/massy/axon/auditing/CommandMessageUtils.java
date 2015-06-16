@@ -102,63 +102,63 @@ public abstract class CommandMessageUtils {
 	
 	/**
 	 * 读取资源
-	 * @param command {@link CommandMessage},不能为null.
+	 * @param message {@link CommandMessage},不能为null.
 	 * @return
 	 */
-	public static Object getResource(CommandMessage<?> command){
-		Asserts.argumentNotNull(command, "command");
+	public static Object getResource(CommandMessage<?> message){
+		Asserts.argumentNotNull(message, "message");
 		
-		return command.getMetaData().get(RESOURCE);
+		return message.getMetaData().get(RESOURCE);
 	}
 	
 	/**
 	 * 
-	 * @param command
+	 * @param message
 	 * @return
 	 */
-	public static String getResourceTypeName(CommandMessage<?> command){
-		Asserts.argumentNotNull(command, "command");
+	public static String getResourceTypeName(CommandMessage<?> message){
+		Asserts.argumentNotNull(message, "message");
 		
-		return (String)command.getMetaData().get(RESOURCE_TYPENAME);
+		return (String)message.getMetaData().get(RESOURCE_TYPENAME);
 	}
 	
 	/**
 	 * 获取资源的编号
-	 * @param command {@link CommandMessage},不能为null.
+	 * @param message {@link CommandMessage},不能为null.
 	 * @return
 	 * 			字符串，资源编号
 	 */
 	
-	public static String getResourceIdentifier(CommandMessage<?> command){
-		Asserts.argumentNotNull(command, "command");
+	public static String getResourceIdentifier(CommandMessage<?> message){
+		Asserts.argumentNotNull(message, "command");
 		
-		return (String)command.getMetaData().get(RESOURCE_IDENTIFIER);
+		return (String)message.getMetaData().get(RESOURCE_IDENTIFIER);
 	}
 	
 	/**
 	 * 获取命令说明
-	 * @param command  {@link CommandMessage},不能为null.
+	 * @param message  {@link CommandMessage},不能为null.
 	 * @return
 	 * 			字符串，命令的说明
 	 */
-	public static String getDescription(CommandMessage<?> command){
-		Asserts.argumentNotNull(command, "command");
+	public static String getDescription(CommandMessage<?> message){
+		Asserts.argumentNotNull(message, "message");
 		
-		return CommandDescriptionRegistryFactory.getDefault().getDescription(command);
+		return CommandDescriptionRegistryFactory.getDefault().getDescription(message);
 	}
 	
 	/**
 	 * 获取创建时间
 	 * <br>
 	 * 如果不存在，则取当前时间
-	 * @param command
+	 * @param message
 	 * @return
 	 */
-	public static Timestamp getTimestamp(CommandMessage<?> command){
-		Asserts.argumentNotNull(command, "command");
+	public static Timestamp getTimestamp(CommandMessage<?> message){
+		Asserts.argumentNotNull(message, "message");
 		
-		return command.getMetaData().containsKey(CREATE_TIMESTAMP) ?
-					(Timestamp)command.getMetaData().get(CREATE_TIMESTAMP) :
+		return message.getMetaData().containsKey(CREATE_TIMESTAMP) ?
+					(Timestamp)message.getMetaData().get(CREATE_TIMESTAMP) :
 						new Timestamp(System.currentTimeMillis());
 		
 	}

@@ -6,8 +6,7 @@ package org.smarabbit.massy.test;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.smarabbit.massy.MassyUtils;
-import org.smarabbit.massy.launch.MassyLauncher;
+import org.smarabbit.massy.MassyFramework;
 
 /**
  * Massy Framework 初始化
@@ -16,23 +15,24 @@ import org.smarabbit.massy.launch.MassyLauncher;
  */
 public abstract class MassyFrameworkInitializer {
 
-	private static boolean LAUNCHED = false;
+	private static MassyFramework INSTANCE = null;
 	
 	public static boolean launch(Map<String, Object> initParams){
 		synchronized(MassyFrameworkInitializer.class) {
-			if (!LAUNCHED){
+			if (INSTANCE == null){
 				Map<String, Object> params = initParams == null ?
 						new HashMap<String, Object>() :
 							new HashMap<String, Object>(initParams);
 						
-				MassyLauncher launcher = MassyUtils.create();
-				launcher.launch(params);
-				
-				LAUNCHED = true;
+				INSTANCE = new MassyFramework();
+				INSTANCE.start(params);
 			}
 		}
 		
-		return LAUNCHED;
+		return INSTANCE.isRunning();
 	}
 
+	public MassyFramework getFramework(){
+		return INSTANCE;
+	}
 }

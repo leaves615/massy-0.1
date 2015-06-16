@@ -18,12 +18,11 @@ import org.smarabbit.massy.Constants;
 import org.smarabbit.massy.MassyContext;
 import org.smarabbit.massy.annotation.Order;
 import org.smarabbit.massy.annotation.Ordered;
-import org.smarabbit.massy.launch.MassyContextInitializer;
-import org.smarabbit.massy.launch.MassyContextInitializerChain;
+import org.smarabbit.massy.launch.AbstractPlugInActivator;
 import org.smarabbit.massy.launch.MassyLaunchException;
-import org.springframework.context.ApplicationContext;
 import org.smarabbit.massy.spring.support.MassyResourceFinder;
 import org.smarabbit.massy.spring.support.MassyResourceFinderFactroy;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Spring配置文件初始化器加载除Web应用外的其他Spring配置文件。
@@ -35,10 +34,10 @@ import org.smarabbit.massy.spring.support.MassyResourceFinderFactroy;
  *
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class SpringContextInitializer implements MassyContextInitializer {
+public class SpringPlugInActivator extends  AbstractPlugInActivator {
 	
 	private static final Logger logger =
-			LoggerFactory.getLogger(SpringContextInitializer.class);
+			LoggerFactory.getLogger(SpringPlugInActivator.class);
 	
 	//默认的配置文件路径
 	private static final String DEFAULT_PATH = "classpath*:/META-INF/massy/context";
@@ -58,21 +57,23 @@ public class SpringContextInitializer implements MassyContextInitializer {
 	/**
 	 * 
 	 */
-	public SpringContextInitializer() {
+	public SpringPlugInActivator() {
 		super();
 	}
+	
+	
 
 	/* (non-Javadoc)
-	 * @see org.smarabbit.massy.launch.MassyContextInitializer#onInit(org.smarabbit.massy.MassyContext, java.util.Map, org.smarabbit.massy.launch.MassyContextInitializerChain)
+	 * @see org.smarabbit.massy.launch.PlugInActivator#start(org.smarabbit.massy.MassyContext, java.util.Map)
 	 */
 	@Override
-	public void onInit(MassyContext context, Map<String, Object> initParams,
-			MassyContextInitializerChain chain) throws MassyLaunchException {
+	public void start(MassyContext context, Map<String, Object> initParams)
+			throws MassyLaunchException {
 		try{
 			Map<String, Collection<MassyResource>> resources = this.findResources(initParams);
 			List<ApplicationContext> list = new ArrayList<ApplicationContext>();
 			
-			MultithreadingBatchLoader loader = new MultithreadingBatchLoader(list);
+			MultithreadingBatchLoader loader = new MultithreadingBatchLoader(list, this);
 			
 			Iterator<Entry<String, Collection<MassyResource>>> it =
 					resources.entrySet().iterator();
@@ -94,7 +95,6 @@ public class SpringContextInitializer implements MassyContextInitializer {
 			throw new MassyLaunchException(e.getMessage(), e);
 		}
 		
-		chain.proceed(context, initParams);
 	}
 
 	/**

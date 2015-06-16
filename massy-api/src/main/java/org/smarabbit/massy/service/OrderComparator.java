@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.smarabbit.massy.support;
+package org.smarabbit.massy.service;
 
 import java.util.Comparator;
 
@@ -32,7 +32,7 @@ public class OrderComparator implements Comparator<Object> {
 		int order1 = this.getOrder(o1);
 		int order2 = this.getOrder(o2);
 		
-		return order1 == order2? 0:(order1 > order2 ? 1 : -1);
+		return order1 == order2 ? 0: (order1 > order2 ? 1 : -1);
 	}
 
 	protected int getOrder(Object target){

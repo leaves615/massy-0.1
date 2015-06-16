@@ -13,7 +13,7 @@ public interface Ordered {
 	 * 最高优先级
 	 * @see java.lang.Integer#MIN_VALUE
 	 */
-	int HIGHEST_PRECEDENCE = Integer.MIN_VALUE;
+	int HIGHEST_PRECEDENCE = Integer.MIN_VALUE + 100;
 	
 	/**
 	 * 缺省优先级
