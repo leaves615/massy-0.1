@@ -23,6 +23,6 @@ public interface My extends Actable{
 	 * @return
 	 * 		{@link A},可能返回null.
 	 */
-	<A extends Actable> A runAs(Class<A> actorType);
+	<A> A runAs(Class<A> actorType);
 	
 }

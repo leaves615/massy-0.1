@@ -14,6 +14,8 @@ import java.util.Set;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -59,6 +61,8 @@ public class MassyServletContextInitializer implements
 		Map<String, Object> initParams = this.createInitParams(ctx);
 		framework = new MassyFramework();
 		framework.start(initParams);
+		
+		ctx.addListener(new ServlceContextDestory());
 	}
 	
 	protected Map<String, Object> createInitParams(ServletContext ctx){
@@ -101,6 +105,20 @@ public class MassyServletContextInitializer implements
 		}
 	}
 	
+	private class ServlceContextDestory implements ServletContextListener{
+
+		@Override
+		public void contextInitialized(ServletContextEvent sce) {
+			
+		}
+
+		@Override
+		public void contextDestroyed(ServletContextEvent sce) {
+			MassyServletContextInitializer.this.framework.stop();			
+		}
+		
+	}
+	
 	private class ServletContextPlugInActivator extends AbstractPlugInActivator {
 
 		private ServletContext sc;
@@ -109,8 +127,6 @@ public class MassyServletContextInitializer implements
 			this.sc = sc;
 		}
 		
-		
-
 		/* (non-Javadoc)
 		 * @see org.smarabbit.massy.launch.PlugInActivator#start(org.smarabbit.massy.MassyContext, java.util.Map)
 		 */

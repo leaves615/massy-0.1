@@ -68,18 +68,20 @@ public class ShiroPlugInActivator extends AbstractPlugInActivator {
 
 		@Override
 		public void onEvent(MassyContextEvent event) {
-			ServiceRegistry registry = event.getMassyContext().getService(ServiceRegistry.class);
-			if (!this.hasServletContext(registry)){
-				//非ServletContext模式下，创建Shiro安全组件
-				try{			
-					ShiroPlugInActivator.this.add( 
-							this.registerSecurityManager(registry));
-				}catch(Exception e){
-					throw new MassyLaunchException(e.getMessage(),e);
+			if (event.isStarted()){
+				ServiceRegistry registry = event.getMassyContext().getService(ServiceRegistry.class);
+				if (!this.hasServletContext(registry)){
+					//非ServletContext模式下，创建Shiro安全组件
+					try{			
+						ShiroPlugInActivator.this.add( 
+								this.registerSecurityManager(registry));
+					}catch(Exception e){
+						throw new MassyLaunchException(e.getMessage(),e);
+					}
 				}
+				
+				ShiroPlugInActivator.this.add(this.registerMyServiceFactory(registry));
 			}
-			
-			ShiroPlugInActivator.this.add(this.registerMyServiceFactory(registry));
 		}
 		
 		protected ServiceRegistration registerMyServiceFactory(ServiceRegistry registry){

@@ -48,7 +48,7 @@ public class AnonymousUser implements My {
 	 * @see org.smarabbit.massy.model.My#runAs(java.lang.Class)
 	 */
 	@Override
-	public <A extends Actable> A runAs(Class<A> actorType) {
+	public <A> A runAs(Class<A> actorType) {
 		return MassyUtils.adapt(this, actorType);
 	}
 
