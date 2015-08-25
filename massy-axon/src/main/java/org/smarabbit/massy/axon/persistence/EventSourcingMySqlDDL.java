@@ -139,7 +139,7 @@ public interface EventSourcingMySqlDDL {
 					"`id` bigint(20) NOT NULL AUTO_INCREMENT,  " +
 					"`userId` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,  " +
 					"`displayName` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL, " +
-					"`commandType` varchar(255) CHARACTER SET utf8mb4 NOT NULL, " +
+					"`commandType` varchar(255) CHARACTER SET utf8 NOT NULL, " +
 					"`command` blob NOT NULL,  " +
 					"`description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL, " +
 					"`events` blob, " +

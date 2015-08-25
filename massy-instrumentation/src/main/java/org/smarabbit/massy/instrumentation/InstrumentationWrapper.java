@@ -12,9 +12,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.jar.JarFile;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * {@link Instrumentation}封装器，提供卸载{@link ClassFileTransformer}的简易处理，
  * 避免web application重复启动时发生{@link ClassFileTransformer}未即使卸载的场景。
@@ -24,8 +21,6 @@ import org.slf4j.LoggerFactory;
  */
 public class InstrumentationWrapper implements Instrumentation {
 
-	private final Logger logger = 
-			LoggerFactory.getLogger(InstrumentationWrapper.class);
 	private final Instrumentation inst;
 	private Set<ClassFileTransformer> transformers =
 			new CopyOnWriteArraySet<ClassFileTransformer>();
@@ -47,9 +42,6 @@ public class InstrumentationWrapper implements Instrumentation {
 			boolean canRetransform) {
 		this.inst.addTransformer(transformer, canRetransform);
 		transformers.add(transformer);
-		if (logger.isTraceEnabled()){
-			logger.trace("added transformer: " + transformer + ".");
-		}
 	}
 
 	/* (non-Javadoc)
@@ -59,9 +51,6 @@ public class InstrumentationWrapper implements Instrumentation {
 	public void addTransformer(ClassFileTransformer transformer) {
 		this.inst.addTransformer(transformer);
 		transformers.add(transformer);
-		if (logger.isTraceEnabled()){
-			logger.trace("added transformer: " + transformer + ".");
-		}
 	}
 
 	/* (non-Javadoc)
@@ -71,13 +60,6 @@ public class InstrumentationWrapper implements Instrumentation {
 	public boolean removeTransformer(ClassFileTransformer transformer) {
 		boolean result = this.transformers.remove(transformer);
 		
-		if (logger.isTraceEnabled()){
-			if (result){
-				logger.trace("removed transformer success: " + transformer + ".");
-			}else{
-				logger.warn("removed transformer failed: " + transformer + ".");
-			}
-		}
 		return result;
 	}
 
@@ -189,14 +171,7 @@ public class InstrumentationWrapper implements Instrumentation {
 		Iterator<ClassFileTransformer> it = this.transformers.iterator();
 		while (it.hasNext()){
 			ClassFileTransformer transformer = it.next();
-			boolean flag = this.inst.removeTransformer(transformer);
-			if (logger.isTraceEnabled()){
-				if (flag){
-					logger.trace("removed transformer success: " + transformer + ".");
-				}else{
-					logger.warn("removed transformer failed: " + transformer + ".");
-				}
-			}
+			this.inst.removeTransformer(transformer);
 		}
 		this.transformers.clear();
 	}
