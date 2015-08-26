@@ -45,7 +45,7 @@ public interface ServiceRegistrationManager<S> extends RegistrationManager<Servi
 	 * 			{@link S}.
 	 */
 	S findService(Descriptor descriptor);
-	
+		
 	/**
 	 * 获取所有服务
 	 * 
@@ -77,6 +77,15 @@ public interface ServiceRegistrationManager<S> extends RegistrationManager<Servi
 	 * 		满足规则的服务，服务不存在返回null.
 	 */
 	S findService(Specification<Descriptor> spec);
+	
+	/**
+	 * 查找服务,返回符合规则要求的所有服务，
+	 * @param spec
+	 * 		规则检查器，非空
+	 * @return
+	 * 		满足规则的服务数组，服务不存在返回EMPTY数组.
+	 */
+	S[] findServices(Specification<Descriptor> spec);
 	
 	/**
 	 * 获取缺省服务的描述

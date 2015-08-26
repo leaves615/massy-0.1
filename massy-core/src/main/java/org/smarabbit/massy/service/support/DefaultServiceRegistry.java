@@ -77,6 +77,21 @@ public class DefaultServiceRegistry extends
 				this.getRegistrationManager(serviceType);
 		return registrationManager == null ? null : registrationManager.findService(spec);
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.smarabbit.massy.service.ServiceRegistry#findServices(java.lang.Class, org.smarabbit.massy.spec.Specification)
+	 */
+	@Override
+	public <S> S[] findServices(Class<S> serviceType,
+			Specification<Descriptor> spec) {
+		Asserts.argumentNotNull(serviceType, "serviceType");
+		Asserts.argumentNotNull(spec, "spec");
+		ServiceRegistrationManager<S> registrationManager = 
+				this.getRegistrationManager(serviceType);
+		return registrationManager == null ? 
+				ArrayUtils.newArrayByClass(serviceType, 0): 
+					registrationManager.findServices(spec);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.smarabbit.massy.service.ServiceRepository#getAllServices(java.lang.Class)

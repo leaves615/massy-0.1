@@ -3,8 +3,10 @@
  */
 package org.smarabbit.massy.service.support;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.smarabbit.massy.Constants;
 import org.smarabbit.massy.Descriptor;
@@ -119,6 +121,24 @@ public abstract class AbstractServiceRegistrationManager<S> extends
 			this.getServiceFromRegistration(registration);
 	}
 	
+	
+	/* (non-Javadoc)
+	 * @see org.smarabbit.massy.service.ServiceRegistrationManager#findServices(org.smarabbit.massy.spec.Specification)
+	 */
+	@Override
+	public S[] findServices(Specification<Descriptor> spec) {
+		Asserts.argumentNotNull(spec, "spec");
+		Collection<ServiceRegistration> c = this.getRegistrations();
+		List<ServiceRegistration> registrations =this.doFindAll(c, spec);
+		
+		int size = registrations.size();
+		S[] result = (S[])ArrayUtils.newArrayByClass(this.serviceType, size);
+		for (int i=0; i<size; i++){
+			result[i] = this.getServiceFromRegistration(registrations.get(i));
+		}
+		return result;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.smarabbit.massy.service.ServiceRegistrationManager#getDefaultServiceDescriptor()
 	 */
@@ -211,7 +231,18 @@ public abstract class AbstractServiceRegistrationManager<S> extends
 		return null;
 	}
 	
-	
+	protected List<ServiceRegistration> doFindAll(Collection<ServiceRegistration> list, Specification<Descriptor> spec){
+		List<ServiceRegistration> result = new ArrayList<ServiceRegistration>();
+		Iterator<ServiceRegistration> it = list.iterator();
+		while (it.hasNext()){
+			ServiceRegistration registration = it.next();
+			if (spec.isStaisfyBy(registration.getDescriptor())){
+				result.add(registration);
+			}
+		}
+		
+		return result;
+	}
 	
 	/**
 	 * 从ServiceRegistration中获取服务

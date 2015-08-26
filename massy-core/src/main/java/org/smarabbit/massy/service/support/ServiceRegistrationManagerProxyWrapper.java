@@ -75,6 +75,20 @@ public class ServiceRegistrationManagerProxyWrapper<S> extends
 		S service = this.getServiceRegistrationManager().findService(spec);
 		return service == null ? null : this.createProxy(service);
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.smarabbit.massy.service.ServiceRegistrationManager#findServices(org.smarabbit.massy.spec.Specification)
+	 */
+	@Override
+	public S[] findServices(Specification<Descriptor> spec) {
+		S[] result = this.getServiceRegistrationManager().findServices(spec);
+		
+		int size = result.length;
+		for (int i=0; i<size; i++){
+			result[i] = this.createProxy(result[i]);
+		}
+		return result;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.smarabbit.massy.RegistrationManager#add(org.smarabbit.massy.Registration)

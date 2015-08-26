@@ -68,7 +68,7 @@ public interface ServiceRegistry {
 	<S> S findService(Class<S> serviceType, String alias);
 	
 	/**
-	 * 按服务类型和规则检查器查找服务
+	 * 按服务类型和规则检查器查找首个满足条件的服务
 	 * <br>
 	 * 服务查找将被转发给对应服务类性的{@link ServiceRegistrationManager}进行处理。<br>
 	 * 通过实现自定义的{@link ServiceRegistrationManager}可控制服务查询获取规则。
@@ -82,6 +82,20 @@ public interface ServiceRegistry {
 	<S> S findService(Class<S> serviceType, Specification<Descriptor> spec);
 	
 	
+	/**
+	 *  按服务类型和规则检查器查找所有服务
+	 *  <br>
+	 * 服务查找将被转发给对应服务类性的{@link ServiceRegistrationManager}进行处理。<br>
+	 * 通过实现自定义的{@link ServiceRegistrationManager}可控制服务查询获取规则。
+	 * 
+	 * @param serviceType
+	 * 		服务类型，非空
+	 * @param spec
+	 * 		规则检查器，非空
+	 * @return
+	 * 		满足规则的服务数组，服务不存在返回EMPTY数组.
+	 */
+	<S> S[] findServices(Class<S> serviceType, Specification<Descriptor> spec);
 	
 	/**
 	 * 按服务类型获取所有服务实例
