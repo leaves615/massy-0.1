@@ -17,10 +17,14 @@ import org.smarabbit.massy.util.ServiceLoaderUtils;
  */
 public class BeanRegistryHandlerLoader {
 
+	private static List<DefinitionProcessor> PROCESSORS;
 	private static List<BeanRegistryHandler> HANDLERS;
 	static{
 		HANDLERS = ServiceLoaderUtils.loadServices(BeanRegistryHandler.class);
 		ObjectOrderUtils.sort(HANDLERS);
+		
+		PROCESSORS = ServiceLoaderUtils.loadServices(DefinitionProcessor.class);
+		ObjectOrderUtils.sort(PROCESSORS);
 	}
 		
 	/**
@@ -31,10 +35,19 @@ public class BeanRegistryHandlerLoader {
 	}
 			
 	@SuppressWarnings("unchecked")
-	protected Iterator<BeanRegistryHandler> iterator(){
+	protected Iterator<BeanRegistryHandler> beanRegistryHandlerIterator(){
 		if (HANDLERS == null){
 			return Collections.EMPTY_LIST.iterator();
 		}
 		return HANDLERS.iterator();
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected Iterator<DefinitionProcessor> defintionProcessorIterator(){
+		if (PROCESSORS == null){
+			return Collections.EMPTY_LIST.iterator();
+		}
+		
+		return PROCESSORS.iterator();
 	}
 }

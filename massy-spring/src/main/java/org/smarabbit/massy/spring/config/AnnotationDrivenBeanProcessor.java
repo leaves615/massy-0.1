@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.smarabbit.massy.Constants;
 import org.smarabbit.massy.Registration;
 import org.smarabbit.massy.annotation.support.Definition;
+import org.smarabbit.massy.annotation.support.ExportServiceDefinition;
 import org.smarabbit.massy.spring.MassyApplicationContext;
 import org.smarabbit.massy.spring.MassyResource;
 import org.smarabbit.massy.util.Asserts;
@@ -61,7 +63,26 @@ public class AnnotationDrivenBeanProcessor
 	public void postProcessBeanFactory(
 			ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;		
-		
+	}
+	
+	private void processBeanDefinition(String beanName, Class<?> beanType, 
+			DefaultBeanDefinitionManager definitionManager, ConfigurableListableBeanFactory beanFactory){
+		Iterator<DefinitionProcessor> it = this.defintionProcessorIterator();
+		while (it.hasNext()){
+			DefinitionProcessor processor = it.next();
+			Definition definition = processor.discovry(beanName, beanType, beanFactory);
+			
+			if (definition != null){
+				if (definition instanceof ExportServiceDefinition){
+					ExportServiceDefinition esd = (ExportServiceDefinition)definition;
+					Map<String, Object> props = esd.getProperties();
+					props.put(Constants.SERVICE_CONTAINER, "spring");
+					props.put(Constants.SERVICE_CONFIGFILE, this.resource.getName());
+				}
+				
+				definitionManager.addDefinition(beanName, beanType, definition);
+			}
+		}
 	}
 
 	@Override
@@ -74,15 +95,18 @@ public class AnnotationDrivenBeanProcessor
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
 		
-		
 		Class<?> beanType = bean.getClass();
-		
+				
 		//避免发生循环引用问题，所以FactoryBean在最后处理
 		if (!FactoryBean.class.isAssignableFrom(beanType)){
-			//标记Bean已经在BeanProcessor相关方法中处理
-			this.beanNameMap.put(beanName, ProcessingPoint.BEANPROCESSOR);
 			DefaultBeanDefinitionManager definitionManager = 
 					DefaultBeanDefinitionManagerUtils.getBeanDefinitionManager(this.beanFactory);
+			
+			if (!this.beanNameMap.containsKey(beanName)){
+				this.processBeanDefinition(beanName, beanType, definitionManager, this.getBeanFactory());	
+				this.beanNameMap.put(beanName, ProcessingPoint.BEANPROCESSOR);
+			}
+			
 			this.doRegister(beanName, beanType, beanFactory, definitionManager);
 		}
 		
@@ -135,6 +159,7 @@ public class AnnotationDrivenBeanProcessor
 	protected void onContextRefreshed(ContextRefreshedEvent event){
 		DefaultBeanDefinitionManager definitionManager = 
 				DefaultBeanDefinitionManagerUtils.getBeanDefinitionManager(this.beanFactory);
+		
 		String[] beanNames = this.beanFactory.getBeanDefinitionNames();
 		int size = beanNames.length;
 		for (int i=0; i<size; i++){
@@ -167,7 +192,7 @@ public class AnnotationDrivenBeanProcessor
 		Definition[] definitions = definitionManager.getDefinitions(beanName, beanType);
 		if (definitions.length != 0){
 			for (Definition definition: definitions){
-				Iterator<BeanRegistryHandler> it = this.iterator();
+				Iterator<BeanRegistryHandler> it = this.beanRegistryHandlerIterator();
 				while (it.hasNext()){
 					BeanRegistryHandler handler = it.next();
 					if (handler.support(definition.getClass())){
@@ -199,7 +224,7 @@ public class AnnotationDrivenBeanProcessor
 				this.beanNameMap.remove(beanName);
 				this.doUnregister(beanName);
 			}
-		}
+		}	
 	}
 	
 	/**

@@ -35,6 +35,12 @@ public final class ExportServiceDefinition implements Definition {
 		this.serviceTypes = serviceTypes;
 		this.props = props;
 	}
+	
+	public ExportServiceDefinition(Class<?>[] serviceTypes, Map<String, Object> props){
+		Asserts.argumentNotEmpty(serviceTypes, "serviceTypes");
+		this.serviceTypes = serviceTypes;
+		this.props = props;
+	}
 		
 	public Class<?>[] getServiceTypes(){
 		if (this.serviceTypes.length != 0){

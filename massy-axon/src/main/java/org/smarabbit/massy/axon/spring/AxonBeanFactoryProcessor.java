@@ -23,9 +23,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
+ * 该类已被废弃
  * @author huangkaihui
  *
  */
+@Deprecated
 public class AxonBeanFactoryProcessor implements BeanFactoryPostProcessor, ApplicationContextAware,
 	DestructionAwareBeanPostProcessor{
 
@@ -52,6 +54,10 @@ public class AxonBeanFactoryProcessor implements BeanFactoryPostProcessor, Appli
 			ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		this.factory = beanFactory;
 		
+		
+		
+		//在EventBus构造方法中注入ClusterServiceSelector
+
 		BeanDefinition definition = this.factory.getBeanDefinition(this.eventBus);
 		if (definition != null){
 			if (!definition.getConstructorArgumentValues().isEmpty()){
@@ -72,8 +78,8 @@ public class AxonBeanFactoryProcessor implements BeanFactoryPostProcessor, Appli
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
 		Class<?> beanType = bean.getClass();
-		if (beanType != ClusterServiceSelector.class){
-			if (ClusterSelector.class.isAssignableFrom(beanType)){
+		if (ClusterSelector.class.isAssignableFrom(beanType)){
+			if (beanType != ClusterServiceSelector.class){
 				this.register(beanName, bean);
 			}
 		}
